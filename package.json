@@ -1,0 +1,14 @@
+{
+	"name": "cf-scripts",
+	"module": "index.ts",
+	"type": "module",
+	"scripts": {
+		"build": "bun build ./scripts/index.ts --outdir ./build"
+	},
+	"devDependencies": {
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	}
+}
