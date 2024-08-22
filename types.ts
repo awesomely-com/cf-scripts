@@ -4,3 +4,9 @@ export interface CountdownTimerReturn {
 	minutes: number;
 	seconds: number;
 }
+
+export interface CountdownElements {
+	countdown: string;
+	countdownContainer: string;
+	banner: string;
+}

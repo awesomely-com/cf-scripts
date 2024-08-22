@@ -1,25 +1,31 @@
+import type { CountdownElements } from "../types";
 import {
 	addStyles,
 	formatCountdownString,
 	getPacificMidnightTime,
 } from "../util";
 
-export default function isOfferClosed(countdownEl: string, bannerEl: string) {
+export default function isOfferClosed(elements: CountdownElements) {
 	const urlParams = new URLSearchParams(window.location.search);
 	const dateParam: string | null = urlParams.get("d");
 
+	const { countdown, countdownContainer, banner } = elements;
+
 	if (dateParam) {
+		document.querySelector(banner)?.remove();
+		addStyles(document.querySelector(countdown), {
+			display: "block",
+		});
+
 		const offerDate = getPacificMidnightTime(dateParam).getTime();
 		let timeLeft = offerDate ? offerDate - new Date().getTime() : 0;
-
-		if (bannerEl) document.querySelector(bannerEl)?.remove();
 
 		if (timeLeft <= 0) {
 			document.head.insertAdjacentHTML(
 				"beforeend",
 				`<style>
 				::backdrop {background: black;opacity: 0.75;}
-				${countdownEl} {
+				${countdown} {
 					font-family: 'Open Sans', sans-serif;
 					text-align: center;
 					display: block;
@@ -60,7 +66,7 @@ export default function isOfferClosed(countdownEl: string, bannerEl: string) {
 				if (timeLeft <= 0) {
 					if (interval) {
 						clearInterval(interval);
-						document.querySelector(countdownId)?.remove();
+						document.querySelector(countdown)?.remove();
 					}
 				} else {
 					const countdown = {
@@ -73,7 +79,7 @@ export default function isOfferClosed(countdownEl: string, bannerEl: string) {
 					};
 
 					document.querySelector(
-						countdownId
+						countdown
 					).innerHTML = `OFFER ENDS IN ${formatCountdownString(countdown)}`;
 				}
 			}, 1000);

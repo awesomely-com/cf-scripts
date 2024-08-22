@@ -1,6 +1,6 @@
 import type { CountdownTimerReturn } from "./types";
 
-export function addStyles(el: HTMLElement, styles: Object) {
+export function addStyles(el: HTMLElement | null, styles: Object) {
 	if (!el) return;
 	Object.assign(el.style, styles);
 }
