@@ -13,7 +13,7 @@ export default function isOfferClosed(elements: CountdownElements) {
 
 	if (dateParam) {
 		document.querySelector(banner)?.remove();
-		addStyles(document.querySelector(countdown), {
+		addStyles(document.querySelector(countdownContainer), {
 			display: "block",
 		});
 
