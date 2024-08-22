@@ -1,1 +1,212 @@
-function X(q,G){if(!q)return;Object.assign(q.style,G)}function V(q){const G=new Date(q);if(isNaN(G.getTime()))throw new Error("Invalid date string");G.setUTCDate(G.getUTCDate()+1);let J=new Date().toLocaleString("en-US",{timeZone:"America/Los_Angeles"}).includes("PDT")?-8:-7;return G.setUTCMinutes(G.getUTCMinutes()+J*60*-1),G}function f(q){const{days:G,hours:j,minutes:J,seconds:K}=q;return[G&&`${G}D`,j&&`${j}H`,J&&`${J}M`,K&&`${K}S`].filter(Boolean).join(" : ")}function M(q){const G=q.replace("vidalytics_embed_","");(function(j,J,K,U,Y,R,W,Q,N){if(R="_"+K.toLowerCase(),Q=K+"L",!j[K])j[K]={};if(!j[Q])j[Q]={};if(!j[R])j[R]={};var $="Loader",D=j[R][$],x=j[Q][$+"Script"],H=j[Q][$+"Loaded"],T="Embed";if(!x)x=function(z,Z){if(W){Z();return}if(N=J.createElement("script"),N.type="text/javascript",N.async=1,N.src=z,N.readyState)N.onreadystatechange=function(){if(N.readyState==="loaded"||N.readyState=="complete")N.onreadystatechange=null,H=1,Z()};else N.onload=function(){H=1,Z()};J.getElementsByTagName("head")[0].appendChild(N)};x(Y+"loader.min.js",function(){if(!D){var z=j[Q][$];D=new z}D.loadScript(Y+"player.min.js",function(){var Z=j[K][T];W=new Z,W.run(U)})})})(window,document,"Vidalytics",`vidalytics_embed_${G}`,`https://quick.vidalytics.com/embeds/Y_1586Xh/${G}/`)}function _(q){const G=document.getElementById(q);G.style.display="block"}function A(q){if(!q)return;for(let G of q){const[j,J]=G;X(document.querySelector(j),J)}}function B(q,G){(function(j,J,K,U){j.getVidalyticsPlayer=(Y)=>{j[J]=j[J]||{},j[J][K]=j[J][K]||{};let R=j[J][K][Y]=j[J][K][Y]||{};return new Promise((W)=>{if(R[U])return void W(R[U]);let Q;Object.defineProperty(R,U,{get:()=>Q,set(N){Q=N,W(N)}})})}})(window,"_vidalytics","embeds","player"),getVidalyticsPlayer(q.embedId).then((j)=>{if(!j)return;if(k)j.on("play",()=>{L(q)}),j.on("pause",()=>{P(q)}),j.on("ended",()=>{P(q)}),j.on("unmute",()=>{L(q)});let J=!1;j.on("timeupdate",()=>{if(J)return;if(Math.floor(j.currentTime())>=q?.ctaTime)J=!0,A(G)})})}function L({elements:q}){document.querySelector(q?.row).style.setProperty("padding","0px","important"),document.querySelector(`${q?.row} div.col-inner`).style.setProperty("padding","0px","important"),X(document.querySelector(q?.headerContainer),{display:"none"}),X(document.querySelector(q?.bannerContainer),{display:"none"}),X(document.querySelector("#mobile_video"),{border:"none",borderRadius:"0",backgroundColor:"black",display:"flex",alignItems:"center",justifyContent:"center",height:"100vh"}),window.scroll({top:0})}function P({elements:q}){document.querySelector(q.headerContainer).style.display=null,document.querySelector(q.row).style.padding=null,document.querySelector(`${q?.row} div.col-inner`).removeAttribute("style"),document.querySelector("#mobile_video").removeAttribute("style")}function O(q){const G=document.createElement("button");G.innerText="Show CTA",X(G,{zIndex:999,position:"fixed",right:"2rem",top:"2rem",backgroundColor:"yellow",padding:"2px 4px",borderRadius:"0.5rem",fontSize:"16px"}),G.addEventListener("click",()=>{A(q)}),document.body.append(G)}var k=window.matchMedia("(max-width: 770px)").matches;function w(q){if(!q||typeof q!=="object")return;const{desktop:G,mobile:j,ctaElements:J}=q;if(window.location.host==="app.funnel-preview.com")O(J);if(document.querySelector("#desktop_video>div").id=G.embedId,j)document.querySelector("#mobile_video>div").id=j.embedId;if(k&&j)M(j?.embedId),_("mobile_video"),B(j,J);else M(G?.embedId),_("desktop_video"),B(G,J)}export{w as default};
+// util.ts
+function addStyles(el, styles) {
+  if (!el)
+    return;
+  Object.assign(el.style, styles);
+}
+function getPacificMidnightTime(dateString) {
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid date string");
+  }
+  date.setUTCDate(date.getUTCDate() + 1);
+  let isDaylightSaving = new Date().toLocaleString("en-US", { timeZone: "America/Los_Angeles" }).includes("PDT");
+  let pacificOffset = isDaylightSaving ? -8 : -7;
+  date.setUTCMinutes(date.getUTCMinutes() + pacificOffset * 60 * -1);
+  return date;
+}
+function formatCountdownString(countdown) {
+  const { days, hours, minutes, seconds } = countdown;
+  const parts = [
+    days && `${days}D`,
+    hours && `${hours}H`,
+    minutes && `${minutes}M`,
+    seconds && `${seconds}S`
+  ].filter(Boolean);
+  return parts.join(" : ");
+}
+
+// scripts/vidalytics.js
+function onLoadEmbedCode(embedId) {
+  const key = embedId.replace("vidalytics_embed_", "");
+  (function(v, i, d, a, l, y, t, c, s) {
+    y = "_" + d.toLowerCase();
+    c = d + "L";
+    if (!v[d]) {
+      v[d] = {};
+    }
+    if (!v[c]) {
+      v[c] = {};
+    }
+    if (!v[y]) {
+      v[y] = {};
+    }
+    var vl = "Loader", vli = v[y][vl], vsl = v[c][vl + "Script"], vlf = v[c][vl + "Loaded"], ve = "Embed";
+    if (!vsl) {
+      vsl = function(u, cb) {
+        if (t) {
+          cb();
+          return;
+        }
+        s = i.createElement("script");
+        s.type = "text/javascript";
+        s.async = 1;
+        s.src = u;
+        if (s.readyState) {
+          s.onreadystatechange = function() {
+            if (s.readyState === "loaded" || s.readyState == "complete") {
+              s.onreadystatechange = null;
+              vlf = 1;
+              cb();
+            }
+          };
+        } else {
+          s.onload = function() {
+            vlf = 1;
+            cb();
+          };
+        }
+        i.getElementsByTagName("head")[0].appendChild(s);
+      };
+    }
+    vsl(l + "loader.min.js", function() {
+      if (!vli) {
+        var vlc = v[c][vl];
+        vli = new vlc;
+      }
+      vli.loadScript(l + "player.min.js", function() {
+        var vec = v[d][ve];
+        t = new vec;
+        t.run(a);
+      });
+    });
+  })(window, document, "Vidalytics", `vidalytics_embed_${key}`, `https://quick.vidalytics.com/embeds/Y_1586Xh/${key}/`);
+}
+function onShowVideoElement(selector) {
+  const targetElement = document.getElementById(selector);
+  targetElement.style.display = "block";
+}
+function onShowHiddenItems(elements) {
+  if (!elements)
+    return;
+  for (const element of elements) {
+    const [name, styles] = element;
+    addStyles(document.querySelector(name), styles);
+  }
+}
+function initializePlayerAPI(options, ctaElements) {
+  (function(v, a, p, i) {
+    v.getVidalyticsPlayer = (n) => {
+      v[a] = v[a] || {}, v[a][p] = v[a][p] || {};
+      let d = v[a][p][n] = v[a][p][n] || {};
+      return new Promise((e) => {
+        if (d[i])
+          return void e(d[i]);
+        let t;
+        Object.defineProperty(d, i, {
+          get: () => t,
+          set(i2) {
+            t = i2, e(i2);
+          }
+        });
+      });
+    };
+  })(window, "_vidalytics", "embeds", "player");
+  getVidalyticsPlayer(options.embedId).then((player) => {
+    if (!player)
+      return;
+    if (IS_MOBILE) {
+      player.on("play", () => {
+        onOpenFullscreenVideo(options);
+      });
+      player.on("pause", () => {
+        onCloseFullscreenVideo(options);
+      });
+      player.on("ended", () => {
+        onCloseFullscreenVideo(options);
+      });
+      player.on("unmute", () => {
+        onOpenFullscreenVideo(options);
+      });
+    }
+    let isCTATriggered = false;
+    player.on("timeupdate", () => {
+      if (isCTATriggered)
+        return;
+      const currentTime = Math.floor(player.currentTime());
+      if (currentTime >= options?.ctaTime) {
+        isCTATriggered = true;
+        onShowHiddenItems(ctaElements);
+      }
+    });
+  });
+}
+function onOpenFullscreenVideo({ elements }) {
+  document.querySelector(elements?.row).style.setProperty("padding", "0px", "important");
+  document.querySelector(`${elements?.row} div.col-inner`).style.setProperty("padding", "0px", "important");
+  addStyles(document.querySelector(elements?.headerContainer), {
+    display: "none"
+  });
+  addStyles(document.querySelector(elements?.bannerContainer), {
+    display: "none"
+  });
+  addStyles(document.querySelector("#mobile_video"), {
+    border: "none",
+    borderRadius: "0",
+    backgroundColor: "black",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100vh"
+  });
+  window.scroll({ top: 0 });
+}
+function onCloseFullscreenVideo({ elements }) {
+  document.querySelector(elements.headerContainer).style.display = null;
+  document.querySelector(elements.row).style.padding = null;
+  document.querySelector(`${elements?.row} div.col-inner`).removeAttribute("style");
+  document.querySelector("#mobile_video").removeAttribute("style");
+}
+function onAddDebugButton(ctaElements) {
+  const button = document.createElement("button");
+  button.innerText = "Show CTA";
+  addStyles(button, {
+    zIndex: 999,
+    position: "fixed",
+    right: "2rem",
+    top: "2rem",
+    backgroundColor: "yellow",
+    padding: "2px 4px",
+    borderRadius: "0.5rem",
+    fontSize: "16px"
+  });
+  button.addEventListener("click", () => {
+    onShowHiddenItems(ctaElements);
+  });
+  document.body.append(button);
+}
+var IS_MOBILE = window.matchMedia("(max-width: 770px)").matches;
+function onRenderVideo(options) {
+  if (!options || typeof options !== "object")
+    return;
+  const { desktop, mobile, ctaElements } = options;
+  if (window.location.host === "app.funnel-preview.com") {
+    onAddDebugButton(ctaElements);
+  }
+  document.querySelector("#desktop_video>div").id = desktop.embedId;
+  if (mobile) {
+    document.querySelector("#mobile_video>div").id = mobile.embedId;
+  }
+  if (IS_MOBILE && mobile) {
+    onLoadEmbedCode(mobile?.embedId);
+    onShowVideoElement("mobile_video");
+    initializePlayerAPI(mobile, ctaElements);
+  } else {
+    onLoadEmbedCode(desktop?.embedId);
+    onShowVideoElement("desktop_video");
+    initializePlayerAPI(desktop, ctaElements);
+  }
+}
+export {
+  onRenderVideo as default
+};

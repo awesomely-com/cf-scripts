@@ -3,7 +3,7 @@
 	"module": "index.ts",
 	"type": "module",
 	"scripts": {
-		"build": "bun build ./scripts/offer-closed.ts ./scripts/vidalytics.js --outdir ./build --minify"
+		"build": "bun build ./scripts/offer-closed.ts ./scripts/vidalytics.js --outdir ./build"
 	},
 	"devDependencies": {
 		"@types/bun": "latest"
