@@ -8,6 +8,7 @@ import {
 export default function isOfferClosed(elements: CountdownElements) {
 	const urlParams = new URLSearchParams(window.location.search);
 	const dateParam: string | null = urlParams.get("d");
+	const utmSource: string | null = urlParams.get("utm_source");
 
 	const { countdown, countdownContainer, banner } = elements;
 
@@ -37,26 +38,32 @@ export default function isOfferClosed(elements: CountdownElements) {
 			const modal = document.createElement("dialog");
 			addStyles(modal, {
 				border: "none",
-				padding: "3.5rem",
+				padding: "24px",
 				justifyContent: "center",
 				alignItems: "center",
 				textAlign: "center",
 				flexDirection: "column",
 				display: "flex",
-				gap: "1rem",
 				margin: "auto",
-				fontSize: "1.65rem",
+				fontSize: "18px",
+				borderRadius: "12px",
+				color: "#475467",
 			});
 			modal.innerHTML = `
-            <h2 style="font-size: 3rem; font-weight: 600; margin: 0">This offer has expired.</h2>
-			<p style="margin: 0">
-			<a href="mailto:support@awesomely.com" style="color:coral;">support@awesomely.com</a><br />
+			<p style="color:#D92D20;font-weight:700;margin:0 0 4px 0;font-size:14px;">OOPS! YOU JUST MISSED IT!</p>
+            <h2 style="font-size:24px;font-weight:700;margin:0;color:#101828">This offer has expired.</h2>
+			${
+				utmSource === `fandi`
+					? ``
+					: `<p style="margin:16px 0 0;">
+			<a href="mailto:support@awesomely.com" style="color:#1570EF;">support@awesomely.com</a><br />
 			(877) 224-0445
 			</p>
-			<p style="margin: 0">
-			<b>Monday - Friday</b><br />
+			<p style="margin:0;">
+			Monday - Friday<br />
 			9:00am - 5:00pm ET
-			</p>
+			</p>`
+			}
 			`;
 			document.body.appendChild(modal);
 			modal.showModal();
