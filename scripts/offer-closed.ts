@@ -69,7 +69,7 @@ export default function isOfferClosed(elements: CountdownElements) {
 						document.querySelector(countdown)?.remove();
 					}
 				} else {
-					const countdown = {
+					const countdownTime = {
 						days: Math.floor(timeLeft / (1000 * 60 * 60 * 24)),
 						hours: Math.floor(
 							(timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
@@ -80,7 +80,7 @@ export default function isOfferClosed(elements: CountdownElements) {
 
 					document.querySelector(
 						countdown
-					).innerHTML = `OFFER ENDS IN ${formatCountdownString(countdown)}`;
+					).innerHTML = `OFFER ENDS IN ${formatCountdownString(countdownTime)}`;
 				}
 			}, 1000);
 		}
