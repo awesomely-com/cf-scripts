@@ -1,5 +1,7 @@
 // util.ts
 function addStyles(el, styles) {
+  if (!el)
+    return;
   Object.assign(el.style, styles);
 }
 function getPacificMidnightTime(dateString) {
@@ -25,14 +27,24 @@ function formatCountdownString(countdown) {
 }
 
 // scripts/offer-closed.ts
-function isOfferClosed(countdownId) {
+function isOfferClosed(countdownEl, bannerEl) {
   const urlParams = new URLSearchParams(window.location.search);
   const dateParam = urlParams.get("d");
   if (dateParam) {
     const offerDate = getPacificMidnightTime(dateParam).getTime();
     let timeLeft = offerDate ? offerDate - new Date().getTime() : 0;
+    if (bannerEl)
+      document.querySelector(bannerEl)?.remove();
     if (timeLeft <= 0) {
-      document.head.insertAdjacentHTML("beforeend", `<style>::backdrop {background: black;opacity: 0.75;}</style>`);
+      document.head.insertAdjacentHTML("beforeend", `<style>
+				::backdrop {background: black;opacity: 0.75;}
+				${countdownEl} {
+					font-family: 'Open Sans', sans-serif;
+					text-align: center;
+					display: block;
+					margin: 0 auto;
+				}
+				</style>`);
       const modal = document.createElement("dialog");
       addStyles(modal, {
         border: "none",
@@ -75,7 +87,7 @@ function isOfferClosed(countdownId) {
             minutes: Math.floor(timeLeft % (1000 * 60 * 60) / (1000 * 60)),
             seconds: Math.floor(timeLeft % (1000 * 60) / 1000)
           };
-          document.querySelector(countdownId).innerHTML = formatCountdownString(countdown);
+          document.querySelector(countdownId).innerHTML = `OFFER ENDS IN ${formatCountdownString(countdown)}`;
         }
       }, 1000);
     }
