@@ -4,7 +4,7 @@ import {
 	getPacificMidnightTime,
 } from "../util";
 
-export default function isOfferClosed(countdownId: string) {
+export default function isOfferClosed(countdownEl: string, bannerEl: string) {
 	const urlParams = new URLSearchParams(window.location.search);
 	const dateParam: string | null = urlParams.get("d");
 
@@ -12,10 +12,20 @@ export default function isOfferClosed(countdownId: string) {
 		const offerDate = getPacificMidnightTime(dateParam).getTime();
 		let timeLeft = offerDate ? offerDate - new Date().getTime() : 0;
 
+		if (bannerEl) document.querySelector(bannerEl)?.remove();
+
 		if (timeLeft <= 0) {
 			document.head.insertAdjacentHTML(
 				"beforeend",
-				`<style>::backdrop {background: black;opacity: 0.75;}</style>`
+				`<style>
+				::backdrop {background: black;opacity: 0.75;}
+				${countdownEl} {
+					font-family: 'Open Sans', sans-serif;
+					text-align: center;
+					display: block;
+					margin: 0 auto;
+				}
+				</style>`
 			);
 			const modal = document.createElement("dialog");
 			addStyles(modal, {
@@ -62,8 +72,9 @@ export default function isOfferClosed(countdownId: string) {
 						seconds: Math.floor((timeLeft % (1000 * 60)) / 1000),
 					};
 
-					document.querySelector(countdownId).innerHTML =
-						formatCountdownString(countdown);
+					document.querySelector(
+						countdownId
+					).innerHTML = `OFFER ENDS IN ${formatCountdownString(countdown)}`;
 				}
 			}, 1000);
 		}

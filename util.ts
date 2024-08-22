@@ -1,10 +1,11 @@
 import type { CountdownTimerReturn } from "./types";
 
-export const addStyles = (el: HTMLElement, styles: Object) => {
+export function addStyles(el: HTMLElement, styles: Object) {
+	if (!el) return;
 	Object.assign(el.style, styles);
-};
+}
 
-export const getPacificMidnightTime = (dateString: string) => {
+export function getPacificMidnightTime(dateString: string) {
 	const date = new Date(dateString);
 	if (isNaN(date.getTime())) {
 		throw new Error("Invalid date string");
@@ -22,7 +23,7 @@ export const getPacificMidnightTime = (dateString: string) => {
 	date.setUTCMinutes(date.getUTCMinutes() + pacificOffset * 60 * -1);
 
 	return date;
-};
+}
 
 export function formatCountdownString(countdown: CountdownTimerReturn) {
 	const { days, hours, minutes, seconds } = countdown;

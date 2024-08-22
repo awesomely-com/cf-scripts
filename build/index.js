@@ -1,4 +1,18 @@
 // util.ts
+function addStyles(el, styles) {
+  Object.assign(el.style, styles);
+}
+function getPacificMidnightTime(dateString) {
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid date string");
+  }
+  date.setUTCDate(date.getUTCDate() + 1);
+  let isDaylightSaving = new Date().toLocaleString("en-US", { timeZone: "America/Los_Angeles" }).includes("PDT");
+  let pacificOffset = isDaylightSaving ? -8 : -7;
+  date.setUTCMinutes(date.getUTCMinutes() + pacificOffset * 60 * -1);
+  return date;
+}
 function formatCountdownString(countdown) {
   const { days, hours, minutes, seconds } = countdown;
   const parts = [
@@ -9,20 +23,6 @@ function formatCountdownString(countdown) {
   ].filter(Boolean);
   return parts.join(" : ");
 }
-var addStyles = (el, styles) => {
-  Object.assign(el.style, styles);
-};
-var getPacificMidnightTime = (dateString) => {
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) {
-    throw new Error("Invalid date string");
-  }
-  date.setUTCDate(date.getUTCDate() + 1);
-  let isDaylightSaving = new Date().toLocaleString("en-US", { timeZone: "America/Los_Angeles" }).includes("PDT");
-  let pacificOffset = isDaylightSaving ? -8 : -7;
-  date.setUTCMinutes(date.getUTCMinutes() + pacificOffset * 60 * -1);
-  return date;
-};
 
 // scripts/offer-closed.ts
 function isOfferClosed(countdownId) {
