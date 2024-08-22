@@ -13,17 +13,9 @@ export default function isOfferClosed(elements: CountdownElements) {
 
 	if (dateParam) {
 		document.querySelector(banner)?.remove();
-		addStyles(document.querySelector(countdownContainer), {
-			display: "block",
-		});
-
-		const offerDate = getPacificMidnightTime(dateParam).getTime();
-		let timeLeft = offerDate ? offerDate - new Date().getTime() : 0;
-
-		if (timeLeft <= 0) {
-			document.head.insertAdjacentHTML(
-				"beforeend",
-				`<style>
+		document.head.insertAdjacentHTML(
+			"beforeend",
+			`<style>
 				::backdrop {background: black;opacity: 0.75;}
 				${countdown} {
 					font-family: 'Open Sans', sans-serif;
@@ -32,25 +24,33 @@ export default function isOfferClosed(elements: CountdownElements) {
 					margin: 0 auto;
 				}
 				</style>`
-			);
+		);
+
+		const offerDate = getPacificMidnightTime(dateParam).getTime();
+		let timeLeft = offerDate ? offerDate - new Date().getTime() : 0;
+
+		if (timeLeft <= 0) {
+			addStyles(document.querySelector(countdownContainer), {
+				display: "none",
+			});
+			document.body.style.overflowY = "hidden";
 			const modal = document.createElement("dialog");
 			addStyles(modal, {
 				border: "none",
-				padding: "1rem",
+				padding: "3.5rem",
 				justifyContent: "center",
 				alignItems: "center",
 				textAlign: "center",
 				flexDirection: "column",
-				maxWidth: "325px",
 				display: "flex",
 				gap: "1rem",
 				margin: "auto",
-				fontSize: "1.3rem",
+				fontSize: "1.65rem",
 			});
 			modal.innerHTML = `
-            <h2 style="font-size: 2rem; margin: 0">This offer has expired.</h2>
+            <h2 style="font-size: 3rem; font-weight: 600; margin: 0">This offer has expired.</h2>
 			<p style="margin: 0">
-			<a href="mailto:support@awesomely.com">support@awesomely.com</a><br />
+			<a href="mailto:support@awesomely.com" style="color:coral;">support@awesomely.com</a><br />
 			(877) 224-0445
 			</p>
 			<p style="margin: 0">
@@ -61,6 +61,9 @@ export default function isOfferClosed(elements: CountdownElements) {
 			document.body.appendChild(modal);
 			modal.showModal();
 		} else {
+			addStyles(document.querySelector(countdownContainer), {
+				display: "block",
+			});
 			const interval = setInterval(() => {
 				timeLeft = timeLeft - 1000;
 				if (timeLeft <= 0) {
@@ -80,7 +83,9 @@ export default function isOfferClosed(elements: CountdownElements) {
 
 					document.querySelector(
 						countdown
-					).innerHTML = `OFFER ENDS IN ${formatCountdownString(countdownTime)}`;
+					).innerHTML = `OFFER ENDS IN <b>${formatCountdownString(
+						countdownTime
+					)}</b>`;
 				}
 			}, 1000);
 		}
