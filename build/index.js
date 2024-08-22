@@ -27,18 +27,21 @@ function formatCountdownString(countdown) {
 }
 
 // scripts/offer-closed.ts
-function isOfferClosed(countdownEl, bannerEl) {
+function isOfferClosed(elements) {
   const urlParams = new URLSearchParams(window.location.search);
   const dateParam = urlParams.get("d");
+  const { countdown, countdownContainer, banner } = elements;
   if (dateParam) {
+    document.querySelector(banner)?.remove();
+    addStyles(document.querySelector(countdown), {
+      display: "block"
+    });
     const offerDate = getPacificMidnightTime(dateParam).getTime();
     let timeLeft = offerDate ? offerDate - new Date().getTime() : 0;
-    if (bannerEl)
-      document.querySelector(bannerEl)?.remove();
     if (timeLeft <= 0) {
       document.head.insertAdjacentHTML("beforeend", `<style>
 				::backdrop {background: black;opacity: 0.75;}
-				${countdownEl} {
+				${countdown} {
 					font-family: 'Open Sans', sans-serif;
 					text-align: center;
 					display: block;
@@ -78,16 +81,16 @@ function isOfferClosed(countdownEl, bannerEl) {
         if (timeLeft <= 0) {
           if (interval) {
             clearInterval(interval);
-            document.querySelector(countdownId)?.remove();
+            document.querySelector(countdown)?.remove();
           }
         } else {
-          const countdown = {
+          const countdown2 = {
             days: Math.floor(timeLeft / (1000 * 60 * 60 * 24)),
             hours: Math.floor(timeLeft % (1000 * 60 * 60 * 24) / (1000 * 60 * 60)),
             minutes: Math.floor(timeLeft % (1000 * 60 * 60) / (1000 * 60)),
             seconds: Math.floor(timeLeft % (1000 * 60) / 1000)
           };
-          document.querySelector(countdownId).innerHTML = `OFFER ENDS IN ${formatCountdownString(countdown)}`;
+          document.querySelector(countdown2).innerHTML = `OFFER ENDS IN ${formatCountdownString(countdown2)}`;
         }
       }, 1000);
     }
