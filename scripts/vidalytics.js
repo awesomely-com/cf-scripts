@@ -7,7 +7,12 @@ export default function onRenderVideo(options) {
 	if (!options || typeof options !== "object") return;
 	const { desktop, mobile, ctaElements } = options;
 
-	if (window.location.host === "app.funnel-preview.com") {
+	const urlParams = new URLSearchParams(window.location.search);
+
+	if (
+		window.location.host === "app.funnel-preview.com" ||
+		urlParams.get("debug") === "true"
+	) {
 		onAddDebugButton(ctaElements);
 	}
 

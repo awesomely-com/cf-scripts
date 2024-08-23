@@ -50,6 +50,7 @@ export default function isOfferClosed(elements: CountdownElements) {
 				color: "#475467",
 			});
 			modal.innerHTML = `
+			<img src="../assets/offer-closed.png" alt="Sad Face" role="presentation" style="margin-bottom:16px;" />
 			<p style="color:#D92D20;font-weight:700;margin:0 0 4px 0;font-size:14px;">OOPS! YOU JUST MISSED IT!</p>
             <h2 style="font-size:24px;font-weight:700;margin:0;color:#101828">This offer has expired.</h2>
 			${
