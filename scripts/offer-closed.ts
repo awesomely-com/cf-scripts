@@ -54,8 +54,6 @@ export default function isOfferClosed(elements: CountdownElements) {
 				style="
 					padding: 12px;
 					border-radius: 10px;
-					width: 24px;
-					height: 24px;
 					display: flex;
 					justify-content: center;
 					align-items: center;

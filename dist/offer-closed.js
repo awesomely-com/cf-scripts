@@ -11,8 +11,6 @@ function a(o,e){if(!o)return;Object.assign(o.style,e)}function d(o){const e=new 
 				style="
 					padding: 12px;
 					border-radius: 10px;
-					width: 24px;
-					height: 24px;
 					display: flex;
 					justify-content: center;
 					align-items: center;
