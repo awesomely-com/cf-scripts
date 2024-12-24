@@ -1,4 +1,3 @@
-// Declare the global variable that will be set before script execution
 declare global {
     interface Window {
         vslForUrls: string;
@@ -24,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Add the vsl parameter if it exists on window
     if (window.vslForUrls) {
         params.vsl = window.vslForUrls;
     }
@@ -44,6 +42,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (href) {
             try {
                 const url = new URL(href, window.location.origin);
+                // Remove utm_content if it exists
+                url.searchParams.delete('utm_content');
+                
                 const queryString = buildQueryString();
                 if (queryString) {
                     const existingParams = url.searchParams;
@@ -52,8 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         existingParams.append(key, value);
                     });
                     url.search = existingParams.toString();
-                    anchor.setAttribute('href', url.toString());
                 }
+                anchor.setAttribute('href', url.toString());
             } catch (e) {
                 console.error('Invalid URL:', href);
             }
@@ -65,6 +66,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (dl) {
             try {
                 const url = new URL(dl, window.location.origin);
+                // Remove utm_content if it exists
+                url.searchParams.delete('utm_content');
+                
                 const queryString = buildQueryString();
                 if (queryString) {
                     const existingParams = url.searchParams;
@@ -73,8 +77,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         existingParams.append(key, value);
                     });
                     url.search = existingParams.toString();
-                    img.setAttribute('data-imagelink', url.toString());
                 }
+                img.setAttribute('data-imagelink', url.toString());
             } catch (e) {
                 console.error('Invalid URL:', dl);
             }
