@@ -1,17 +1,20 @@
+// Declare the global variable that will be set before script execution
+declare global {
+    interface Window {
+        vslForUrls: string;
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-    // Configuration for parameter names
     const paramNames: string[] = [
         'utm_medium', 'utm_source', 'utm_campaign', 'utm_term', 'fbclid',
         'gclid', 'wbraid', 'cid', 'affiliate'
     ];
 
-    // Function to get URL parameters
     function getURLParameter(name: string): string | null {
-        const params = new URLSearchParams(window.location.search);
-        return params.get(name);
+        return new URLSearchParams(window.location.search).get(name);
     }
 
-    // Get all relevant URL parameters
     const params: { [key: string]: string } = {};
 
     paramNames.forEach((name) => {
@@ -21,23 +24,22 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Function to build query string
+    // Add the vsl parameter if it exists on window
+    if (window.vslForUrls) {
+        params.vsl = window.vslForUrls;
+    }
+
     function buildQueryString(): string {
         const queryParams = new URLSearchParams();
-
         for (const key in params) {
             if (params.hasOwnProperty(key)) {
                 queryParams.append(key, params[key]);
             }
         }
-
         return queryParams.toString();
     }
 
-    // Update all anchor tags
-    const anchors = document.querySelectorAll('a');
-
-    anchors.forEach((anchor) => {
+    document.querySelectorAll('a').forEach((anchor) => {
         const href = anchor.getAttribute('href');
         if (href) {
             try {
@@ -58,10 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Update all img tags with data-imagelink attribute
-    const images = document.querySelectorAll('img[data-imagelink]');
-
-    images.forEach((img) => {
+    document.querySelectorAll('img[data-imagelink]').forEach((img) => {
         const dl = img.getAttribute('data-imagelink');
         if (dl) {
             try {
