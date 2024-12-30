@@ -1,6 +1,6 @@
 declare global {
     interface Window {
-        vslForUrls: string;
+        slForUrls: string;
     }
 }
 
@@ -23,8 +23,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    if (window.vslForUrls) {
-        params.vsl = window.vslForUrls;
+    if (window.slForUrls) {
+        params.sl = window.slForUrls;
     }
 
     function buildQueryString(): string {
@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const url = new URL(href, window.location.origin);
                 // Remove utm_content if it exists
                 url.searchParams.delete('utm_content');
-                
+
                 const queryString = buildQueryString();
                 if (queryString) {
                     const existingParams = url.searchParams;
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const url = new URL(dl, window.location.origin);
                 // Remove utm_content if it exists
                 url.searchParams.delete('utm_content');
-                
+
                 const queryString = buildQueryString();
                 if (queryString) {
                     const existingParams = url.searchParams;
