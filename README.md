@@ -1,4 +1,4 @@
 # Commands
 
 `bun run index.ts` - Runs Script
-`bun build ./index.ts --outdir ./build` - Builds TS into JS
+`bun build ./index.ts --outdir ./dist` - Builds TS into JS
