@@ -29,15 +29,19 @@ function showTimedHeader(
 	}
 }
 
-export default function onTimedHeader(
-	bannerId: string | undefined,
-	param: string | undefined,
-	time: number | undefined
-) {
+export default function onTimedHeader({
+	bannerId,
+	param,
+	time,
+}: {
+	bannerId: string | undefined;
+	param: string | undefined;
+	time: number | undefined;
+}) {
 	if (bannerId) return;
 	document.head.insertAdjacentHTML(
 		"beforeend",
-		`<style>#${bannerId},#${bannerId}-sticky-wrapper{display:none}</style>`
+		`<style>#${bannerId},#${bannerId}-sticky-wrapper{display:none;opacity:1;}</style>`
 	);
 	document.addEventListener(
 		"DOMContentLoaded",
