@@ -7,7 +7,7 @@ declare global {
 document.addEventListener("DOMContentLoaded", () => {
     const paramNames: string[] = [
         'utm_medium', 'utm_source', 'utm_campaign', 'utm_term', 'fbclid',
-        'gclid', 'wbraid', 'cid', 'affiliate'
+        'gclid', 'wbraid', 'cid', 'affiliate', 'utm_id', 'utm_click_id'
     ];
 
     function getURLParameter(name: string): string | null {
