@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Check for utm_content separately
+    // Handle utm_content just like other parameters
     const utmContent = getURLParameter('utm_content');
     if (utmContent && utmContent !== 'null') {
         params['utm_content'] = utmContent;
@@ -50,18 +50,14 @@ document.addEventListener("DOMContentLoaded", () => {
         if (href) {
             try {
                 const url = new URL(href, window.location.origin);
-                // We no longer delete utm_content as we want to preserve it if it exists in the URL
+                // Remove any existing utm_content
+                url.searchParams.delete('utm_content');
                 const queryString = buildQueryString();
                 if (queryString) {
                     const existingParams = url.searchParams;
                     const newParams = new URLSearchParams(queryString);
                     newParams.forEach((value, key) => {
-                        // If it's utm_content, only add it if there isn't one already
-                        if (key === 'utm_content' && !existingParams.has('utm_content')) {
-                            existingParams.append(key, value);
-                        } else if (key !== 'utm_content') {
-                            existingParams.append(key, value);
-                        }
+                        existingParams.append(key, value);
                     });
                     url.search = existingParams.toString();
                 }
@@ -78,18 +74,14 @@ document.addEventListener("DOMContentLoaded", () => {
         if (dl) {
             try {
                 const url = new URL(dl, window.location.origin);
-                // We no longer delete utm_content as we want to preserve it if it exists in the URL
+                // Remove any existing utm_content
+                url.searchParams.delete('utm_content');
                 const queryString = buildQueryString();
                 if (queryString) {
                     const existingParams = url.searchParams;
                     const newParams = new URLSearchParams(queryString);
                     newParams.forEach((value, key) => {
-                        // If it's utm_content, only add it if there isn't one already
-                        if (key === 'utm_content' && !existingParams.has('utm_content')) {
-                            existingParams.append(key, value);
-                        } else if (key !== 'utm_content') {
-                            existingParams.append(key, value);
-                        }
+                        existingParams.append(key, value);
                     });
                     url.search = existingParams.toString();
                 }
