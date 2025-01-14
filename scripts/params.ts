@@ -7,7 +7,7 @@ declare global {
 document.addEventListener("DOMContentLoaded", () => {
     const paramNames: string[] = [
         'utm_medium', 'utm_source', 'utm_campaign', 'utm_term', 'fbclid',
-        'gclid', 'wbraid', 'cid', 'affiliate', 'utm_id', 'utm_click_id'
+        'gclid', 'wbraid', 'cid', 'affiliate', 'utm_id', 'utm_click_id', 'cid', 'click_id'
     ];
 
     function getURLParameter(name: string): string | null {
@@ -16,12 +16,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const params: { [key: string]: string } = {};
 
+    // Add all tracking parameters
     paramNames.forEach((name) => {
         const value = getURLParameter(name);
         if (value && value !== 'null') {
             params[name] = value;
         }
     });
+
+    // Check for utm_content separately
+    const utmContent = getURLParameter('utm_content');
+    if (utmContent && utmContent !== 'null') {
+        params['utm_content'] = utmContent;
+    }
 
     if (window.slForUrls) {
         params.sl = window.slForUrls;
@@ -37,20 +44,24 @@ document.addEventListener("DOMContentLoaded", () => {
         return queryParams.toString();
     }
 
+    // Update anchor tags
     document.querySelectorAll('a').forEach((anchor) => {
         const href = anchor.getAttribute('href');
         if (href) {
             try {
                 const url = new URL(href, window.location.origin);
-                // Remove utm_content if it exists
-                url.searchParams.delete('utm_content');
-
+                // We no longer delete utm_content as we want to preserve it if it exists in the URL
                 const queryString = buildQueryString();
                 if (queryString) {
                     const existingParams = url.searchParams;
                     const newParams = new URLSearchParams(queryString);
                     newParams.forEach((value, key) => {
-                        existingParams.append(key, value);
+                        // If it's utm_content, only add it if there isn't one already
+                        if (key === 'utm_content' && !existingParams.has('utm_content')) {
+                            existingParams.append(key, value);
+                        } else if (key !== 'utm_content') {
+                            existingParams.append(key, value);
+                        }
                     });
                     url.search = existingParams.toString();
                 }
@@ -61,20 +72,24 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // Update image links
     document.querySelectorAll('img[data-imagelink]').forEach((img) => {
         const dl = img.getAttribute('data-imagelink');
         if (dl) {
             try {
                 const url = new URL(dl, window.location.origin);
-                // Remove utm_content if it exists
-                url.searchParams.delete('utm_content');
-
+                // We no longer delete utm_content as we want to preserve it if it exists in the URL
                 const queryString = buildQueryString();
                 if (queryString) {
                     const existingParams = url.searchParams;
                     const newParams = new URLSearchParams(queryString);
                     newParams.forEach((value, key) => {
-                        existingParams.append(key, value);
+                        // If it's utm_content, only add it if there isn't one already
+                        if (key === 'utm_content' && !existingParams.has('utm_content')) {
+                            existingParams.append(key, value);
+                        } else if (key !== 'utm_content') {
+                            existingParams.append(key, value);
+                        }
                     });
                     url.search = existingParams.toString();
                 }
