@@ -6,7 +6,7 @@ declare global {
 
 document.addEventListener("DOMContentLoaded", () => {
     const paramNames: string[] = [
-        'utm_medium', 'utm_source', 'utm_campaign', 'utm_term', 'fbclid',
+        'utm_medium', 'utm_source', 'utm_campaign', 'utm_term', 'utm_content', 'fbclid',
         'gclid', 'wbraid', 'cid', 'affiliate', 'utm_id', 'utm_click_id', 'cid', 'click_id'
     ];
 
@@ -23,12 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
             params[name] = value;
         }
     });
-
-    // Handle utm_content just like other parameters
-    const utmContent = getURLParameter('utm_content');
-    if (utmContent && utmContent !== 'null') {
-        params['utm_content'] = utmContent;
-    }
 
     if (window.slForUrls) {
         params.sl = window.slForUrls;
