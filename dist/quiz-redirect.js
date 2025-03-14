@@ -8,7 +8,7 @@ function handleClickWithDelay(redirectUrl, urlParams) {
       });
       const finalUrl = `${redirectUrl}?${currentUrlParams.toString()}`;
       window.location.href = finalUrl;
-    }, 1250);
+    }, 1);
   };
 }
 function applyOnClickBehavior(data) {

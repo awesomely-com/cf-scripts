@@ -23,7 +23,7 @@ function handleClickWithDelay(
 
 			// Redirect to the final URL
 			window.location.href = finalUrl;
-		}, 1250); // 1.25 seconds delay
+		}, 1); // 1 seconds delay
 	};
 }
 
