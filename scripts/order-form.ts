@@ -25,7 +25,7 @@ interface Messages {
 }
 
 interface Selectors {
-  submitButton: string;
+  contactInformationSubmitButton: string;
   orderButton: string;
   paymentMethod: string;
   formFields: ContactFormFields;
@@ -159,7 +159,7 @@ class KeapFunnelHandler {
   // Default configuration
   static defaultConfig = {
     selectors: {
-      submitButton: "#tmp_button-35872",
+      contactInformationSubmitButton: "#tmp_button-35872",
       orderButton: "#tmp_button-23692",
       paymentMethod: "#keap-payment-method",
       formFields: {
@@ -341,7 +341,7 @@ class KeapFunnelHandler {
   setupSubmitButtonListener(): void {
     console.log("Setting up submit button listener (legacy flow)");
     const submitButton = document.querySelector(
-      this.config.selectors.submitButton
+      this.config.selectors.contactInformationSubmitButton
     );
     if (submitButton) {
       submitButton.addEventListener("click", (event) => {
@@ -411,13 +411,17 @@ class KeapFunnelHandler {
     console.log(
       "Handling contact information submission (can be triggered by button or directly)"
     );
-    const submitButton = document.querySelector(
-      this.config.selectors.submitButton
+    const contactInformationSubmitButton = document.querySelector(
+      this.config.selectors.contactInformationSubmitButton
     ) as HTMLElement | null;
 
     // Update button state if it exists
-    if (submitButton) {
-      this.setButtonState(submitButton, true, "Processing...");
+    if (contactInformationSubmitButton) {
+      this.setButtonState(
+        contactInformationSubmitButton,
+        true,
+        "Processing..."
+      );
     }
 
     try {
@@ -467,8 +471,8 @@ class KeapFunnelHandler {
 
         // Show alert and reset button if it exists
         alert(errorMessage);
-        if (submitButton) {
-          this.setButtonState(submitButton, false, "Submit");
+        if (contactInformationSubmitButton) {
+          this.setButtonState(contactInformationSubmitButton, false, "Submit");
         }
         return;
       }
@@ -497,8 +501,8 @@ class KeapFunnelHandler {
       );
 
       // Reset button if it exists
-      if (submitButton) {
-        this.setButtonState(submitButton, false, "Submit");
+      if (contactInformationSubmitButton) {
+        this.setButtonState(contactInformationSubmitButton, false, "Submit");
       }
     }
   }
@@ -681,7 +685,10 @@ class KeapFunnelHandler {
     if (this.config.selectors.elementsToHide) {
       this.config.selectors.elementsToHide.forEach((selector: string) => {
         // Skip hiding the submit button if there's no contact ID
-        if (!contactId && selector === this.config.selectors.submitButton) {
+        if (
+          !contactId &&
+          selector === this.config.selectors.contactInformationSubmitButton
+        ) {
           console.log(
             "Skipping hiding submit button since no contact ID is present"
           );
@@ -1543,7 +1550,7 @@ class KeapFunnelHandler {
     if (!contactId) {
       console.log("No contact ID found, showing submit button");
       const submitButton = document.querySelector(
-        this.config.selectors.submitButton
+        this.config.selectors.contactInformationSubmitButton
       ) as HTMLElement | null;
 
       if (submitButton) {
