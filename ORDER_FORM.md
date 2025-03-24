@@ -137,14 +137,18 @@ Note that if any IDs for these elements are changed, you will need to specify th
 ### Import CSS
 
 In the Custom CSS editor, import the following:
-`@import url('https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@main/assets/clickfunnels.css');` This should be the first line of CSS in the Custom CSS editor, and any modifications can be added after that.
+
+`@import url('https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@main/assets/clickfunnels.css');`
+
+This should be the first line of CSS in the Custom CSS editor, and any modifications can be added after that.
 
 ### Import JS
 
 In the Footer Tracking code editor, enter the following as the first line of code:
+
 `<script src="https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@main/dist/order-form.js"></script>`.
 
-### Notes on customization
+### Customizing
 
 Many of the elements that need to be styled by CSS or modified by JS have unique IDs, and the defaults correspond to the original implementation of the APP funnel curing development. Some element IDs may be different for your order form. If so, you may customize the CSS by adding any modifications after the import. As for the JS, the script that loads will take into account anything that you want to specify in the KeapFunnelConfig object BEFORE loading the script.
 
