@@ -141,6 +141,12 @@ interface UpdateContactPayload {
   phone: string;
 }
 
+declare global {
+  interface Window {
+    KeapFunnelConfig?: Partial<KeapFunnelConfig>;
+  }
+}
+
 class KeapFunnelHandler {
   private config: KeapFunnelConfig;
   private state: KeapFunnelState;
@@ -199,10 +205,10 @@ class KeapFunnelHandler {
     },
   };
 
-  constructor(config: Partial<KeapFunnelConfig> = {}) {
+  constructor() {
     this.config = {
       ...KeapFunnelHandler.defaultConfig,
-      ...config,
+      ...(window.KeapFunnelConfig || {}),
     } as KeapFunnelConfig;
     this.state = {
       keapContactId: null,
