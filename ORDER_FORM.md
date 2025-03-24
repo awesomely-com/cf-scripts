@@ -47,18 +47,6 @@ This project is set up to make development easy while working with browser-speci
   ```
   Creates a one-time, minified production build of your TypeScript file. Run this when you're ready to create the final version for ClickFunnels.
 
-## Using with ClickFunnels
-
-1. Run the build command to create a minified JavaScript file:
-
-   ```bash
-   bun run build
-   ```
-
-2. The built file will be available at `dist/clickfunnels.js`
-
-3. Copy the contents of this file and paste it into your ClickFunnels custom JavaScript section.
-
 ## Features
 
 - Contact ID-based session management with URL parameter support
