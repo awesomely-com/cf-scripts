@@ -78,7 +78,7 @@ The script uses a default configuration that can be overridden:
 ```javascript
 window.KeapFunnelConfig = {
   selectors: {
-    submitButton: "#tmp_button-35872",
+    contactInformationSubmitButton: "#tmp_button-35872",
     orderButton: "#tmp_button-23692",
     paymentMethod: "#keap-payment-method",
     formFields: {
@@ -87,7 +87,35 @@ window.KeapFunnelConfig = {
       email: "#input-13475 input",
       phone: "#input-72924 input",
     },
-    // ... other selectors
+    orderTotal: "#tmp_customjs-87590",
+    orderBump:
+      ".orderFormBump .sectioncontent div, .orderFormBump .sectioncontent input#bump-offer",
+    bumpCheckbox: "#bump-offer",
+    messages: {
+      success: "#payment-success-message",
+      error: "#payment-error-message",
+      errorDetails: "#payment-error-details",
+      duplicate: "#duplicate-payment-message",
+    },
+    elementsToHide: [
+      "#tmp_button-35872", // Submit button
+    ],
+    elementsToDisable: [
+      "#tmp_input-36893", // First Name input
+      "#input-32758", // Last Name input
+      "#input-13475", // Email input
+      "#input-72924", // Phone input
+    ],
+    elementsToShowAfterSubmit: [
+      "#headline-93357", // Billing Information headline
+      "#tmp_image-96949", // credit card logos
+      "#tmp_orb-35379", // order bump
+      "#tmp_customjs-87590", // Order Summary Total (custom JS)
+      "#tmp_button-78442", // Primary Submit button
+      "#tmp_button-23692", // Order button
+      "#img-11614", // secure checkout image
+      "#headline-20568", // disclaimer headline
+    ],
   },
   sessionConfig: {
     expirationHours: 2,
@@ -98,14 +126,54 @@ window.KeapFunnelConfig = {
 
 ## Usage
 
-1. Include the script in your ClickFunnels page
-2. Configure the selectors to match your page elements
-3. Initialize the handler:
+### Ensure page elements are present
+
+The following page elements need to exist in order for the order form to load correctly.
+
+1. Custom contact Information submit button `selectors.contactInformationSubmitButton`
+2. Billing Information Header
+3. Custom HTML for Keap iframe
+4. Credit Card logo image
+5. Custom HTML for displaying Order Total
+6. Custom Order button `selectors.orderButton`
+
+Note that if any IDs for these elements are changed, you will need to specify the new IDs in the KeapFunnelConfig object.
+
+#### Notes on the removal of some legacy page elements
+
+### Notes on traditional Page Elements that may exist in legacy CF order form pages
+
+- Removed JS for order total, as this is now handled by our new custom script
+- Removed old primary submit button, as we now have a custom order button with no action that will submit the form
+
+### Import CSS
+
+In the Custom CSS editor, import the following:
+`@import url('https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@main/assets/clickfunnels.css');` This should be the first line of CSS in the Custom CSS editor, and any modifications can be added after that.
+
+### Import JS
+
+In the Footer Tracking code editor, enter the following as the first line of code:
+`<script src="https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@main/dist/order-form.js"></script>`.
+
+### Notes on customization
+
+Many of the elements that need to be styled by CSS or modified by JS have unique IDs, and the defaults correspond to the original implementation of the APP funnel curing development. Some element IDs may be different for your order form. If so, you may customize the CSS by adding any modifications after the import. As for the JS, the script that loads will take into account anything that you want to specify in the KeapFunnelConfig object BEFORE loading the script.
 
 ```javascript
-const keapFunnel = new KeapFunnelHandler();
-keapFunnel.init();
+<script>
+window.KeapFunnelConfig = {
+  // customizations here. Refer to the KeapFunnelConfig object documentation above.
+};
+</script>
+<script src="https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@main/dist/order-form.js"></script>
 ```
+
+---
+
+## Implementation
+
+The rest of the documentation will detail how the script works.
 
 ## Key Methods
 
