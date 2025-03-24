@@ -49,13 +49,13 @@ a[href^="tel"] {
   text-decoration: none; /* Remove underline. */
 }
 
-/* Hide the original order summary */
-#tmp_ors-61891 {
+/* Hide elements only when NOT in editing mode */
+html:not([data-is-editing]) #tmp_ors-61891 {
   display: none !important;
 }
 
 /* Hide the primary submit button for the page */
-#tmp_button-78442 {
+html:not([data-is-editing]) #tmp_button-78442 {
   display: none !important;
 }
 
@@ -65,37 +65,37 @@ a[href^="tel"] {
 }
 
 /* Hide the contact information submit button */
-#tmp_button-35872 {
+html:not([data-is-editing]) #tmp_button-35872 {
   display: none;
 }
 
 /* Hide the secure checkout image until after the session is loaded */
-#img-11614 {
+html:not([data-is-editing]) #img-11614 {
   display: none;
 }
 
 /* Hide the disclaimer headline until after the session is loaded */
-#headline-20568 {
+html:not([data-is-editing]) #headline-20568 {
   display: none;
 }
 
 /* Hide the order bump until after the session is loaded */
-#tmp_orb-35379 {
+html:not([data-is-editing]) #tmp_orb-35379 {
   display: none;
 }
 
 /* Hide the credit card logos until after the session is loaded */
-#tmp_image-96949 {
+html:not([data-is-editing]) #tmp_image-96949 {
   display: none;
 }
 
 /* Hide the billing information headline until after the session is loaded */
-#headline-93357 {
+html:not([data-is-editing]) #headline-93357 {
   display: none;
 }
 
 /* Hide the order summary until after the session is loaded */
-#tmp_orpo-82167 {
+html:not([data-is-editing]) #tmp_orpo-82167 {
   display: none;
 }
 
