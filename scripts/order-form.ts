@@ -33,9 +33,9 @@ interface Selectors {
   orderBump: string;
   bumpCheckbox: string;
   messages: Messages;
-  elementsToHide: string[];
+  elementsToHideAfterSessionStart: string[];
   elementsToDisable: string[];
-  elementsToShowAfterSubmit: string[];
+  elementsToShowAfterSessionStart: string[];
 }
 
 interface SessionConfig {
@@ -147,6 +147,41 @@ declare global {
   }
 }
 
+// Deep merge utility function
+function deepMerge<T extends { [key: string]: any }>(
+  target: T,
+  source: Partial<T>
+): T {
+  const output = { ...target } as { [key: string]: any };
+
+  if (!source) return output as T;
+
+  Object.keys(source).forEach((key) => {
+    const targetValue = output[key];
+    const sourceValue = source[key as keyof T];
+
+    if (Array.isArray(targetValue) && Array.isArray(sourceValue)) {
+      // Merge arrays by concatenating and removing duplicates
+      output[key] = [...new Set([...targetValue, ...sourceValue])];
+    } else if (
+      typeof targetValue === "object" &&
+      targetValue !== null &&
+      typeof sourceValue === "object" &&
+      sourceValue !== null &&
+      !Array.isArray(targetValue) &&
+      !Array.isArray(sourceValue)
+    ) {
+      // Recursively merge nested objects
+      output[key] = deepMerge(targetValue, sourceValue);
+    } else if (sourceValue !== undefined) {
+      // For primitive values or when source value is explicitly set, override
+      output[key] = sourceValue;
+    }
+  });
+
+  return output as T;
+}
+
 class KeapFunnelHandler {
   private config: KeapFunnelConfig;
   private state: KeapFunnelState;
@@ -178,7 +213,7 @@ class KeapFunnelHandler {
         errorDetails: "#payment-error-details",
         duplicate: "#duplicate-payment-message",
       },
-      elementsToHide: [
+      elementsToHideAfterSessionStart: [
         "#tmp_button-35872", // Submit button
       ],
       elementsToDisable: [
@@ -187,7 +222,7 @@ class KeapFunnelHandler {
         "#input-13475", // Email input
         "#input-72924", // Phone input
       ],
-      elementsToShowAfterSubmit: [
+      elementsToShowAfterSessionStart: [
         "#headline-93357", // Billing Information headline
         "#tmp_image-96949", // credit card logos
         "#tmp_orb-35379", // order bump
@@ -206,10 +241,10 @@ class KeapFunnelHandler {
   };
 
   constructor() {
-    this.config = {
-      ...KeapFunnelHandler.defaultConfig,
-      ...(window.KeapFunnelConfig || {}),
-    } as KeapFunnelConfig;
+    this.config = deepMerge(
+      KeapFunnelHandler.defaultConfig,
+      window.KeapFunnelConfig || {}
+    );
     this.state = {
       keapContactId: null,
       orderId: null,
@@ -235,7 +270,7 @@ class KeapFunnelHandler {
       this.setupEventListeners();
 
       // Hide elements until submission
-      this.hideElementsUntilSubmission();
+      this.hideElementsUntilSessionStart();
 
       // Mark as initialized after all setup is complete
       this.initialized = true;
@@ -339,7 +374,10 @@ class KeapFunnelHandler {
   }
 
   setupSubmitButtonListener(): void {
-    console.log("Setting up submit button listener (legacy flow)");
+    console.log(
+      "Setting up submit button listener (legacy flow) with ID:",
+      this.config.selectors.contactInformationSubmitButton
+    );
     const submitButton = document.querySelector(
       this.config.selectors.contactInformationSubmitButton
     );
@@ -575,7 +613,7 @@ class KeapFunnelHandler {
       console.warn("No products found in response");
     }
 
-    this.showElementsAfterSubmission();
+    this.showElementsAfterSessionStart();
     this.setupPaymentMethod();
     this.disableFormElements();
   }
@@ -682,24 +720,26 @@ class KeapFunnelHandler {
     const contactId = this.ensureContactId();
 
     // Hide elements that should be hidden
-    if (this.config.selectors.elementsToHide) {
-      this.config.selectors.elementsToHide.forEach((selector: string) => {
-        // Skip hiding the submit button if there's no contact ID
-        if (
-          !contactId &&
-          selector === this.config.selectors.contactInformationSubmitButton
-        ) {
-          console.log(
-            "Skipping hiding submit button since no contact ID is present"
-          );
-          return;
-        }
+    if (this.config.selectors.elementsToHideAfterSessionStart) {
+      this.config.selectors.elementsToHideAfterSessionStart.forEach(
+        (selector: string) => {
+          // Skip hiding the submit button if there's no contact ID
+          if (
+            !contactId &&
+            selector === this.config.selectors.contactInformationSubmitButton
+          ) {
+            console.log(
+              "Skipping hiding submit button since no contact ID is present"
+            );
+            return;
+          }
 
-        const element = document.querySelector(selector);
-        if (element instanceof HTMLElement) {
-          element.style.display = "none";
+          const element = document.querySelector(selector);
+          if (element instanceof HTMLElement) {
+            element.style.display = "none";
+          }
         }
-      });
+      );
     }
   }
 
@@ -1260,31 +1300,30 @@ class KeapFunnelHandler {
     this.disableFormElements();
   }
 
-  // Hide elements that should only be shown after form submission
-  hideElementsUntilSubmission(): void {
-    // Hide elements that should be shown after submission
-    if (this.config.selectors.elementsToShowAfterSubmit) {
-      this.config.selectors.elementsToShowAfterSubmit.forEach(
+  // Hide elements that should only be shown after session start
+  hideElementsUntilSessionStart(): void {
+    if (this.config.selectors.elementsToShowAfterSessionStart) {
+      this.config.selectors.elementsToShowAfterSessionStart.forEach(
         (selector: string) => {
           const element = document.querySelector(selector);
           if (element) {
             // Add a class that can be targeted with CSS
-            element.classList.add("hidden-until-submission");
+            element.classList.add("hidden-until-session-start");
           }
         }
       );
     }
   }
 
-  // Show elements that were hidden until submission
-  showElementsAfterSubmission(): void {
-    if (this.config.selectors.elementsToShowAfterSubmit) {
-      this.config.selectors.elementsToShowAfterSubmit.forEach(
+  // Show elements that were hidden until session start
+  showElementsAfterSessionStart(): void {
+    if (this.config.selectors.elementsToShowAfterSessionStart) {
+      this.config.selectors.elementsToShowAfterSessionStart.forEach(
         (selector: string) => {
           const element = document.querySelector(selector);
           if (element) {
-            element.classList.remove("hidden-until-submission");
-            element.classList.add("shown-after-submission");
+            element.classList.remove("hidden-until-session-start");
+            element.classList.add("shown-after-session-start");
           }
         }
       );
@@ -1558,7 +1597,7 @@ class KeapFunnelHandler {
         submitButton.style.display = "block";
 
         // Also remove it from any hidden classes
-        submitButton.classList.remove("hidden-until-submission");
+        submitButton.classList.remove("hidden-until-session-start");
 
         console.log("Submit button is now visible");
       } else {

@@ -438,13 +438,13 @@ button[data-state="submitting"] .elButtonMain::after {
   }
 }
 
-/* Handle elements that should be hidden until form submission */
-.hidden-until-submission {
+/* Handle elements that should be hidden until session start */
+html:not([data-is-editing]) .hidden-until-session-start {
   display: none !important;
 }
 
-/* Handle elements that should be shown after form submission */
-.shown-after-submission {
+/* Handle elements that should be shown after session start */
+html:not([data-is-editing]).shown-after-session-start {
   display: block !important;
 }
 

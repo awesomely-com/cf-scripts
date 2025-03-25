@@ -85,7 +85,7 @@ window.KeapFunnelConfig = {
       errorDetails: "#payment-error-details",
       duplicate: "#duplicate-payment-message",
     },
-    elementsToHide: [
+    elementsToHideAfterSessionStart: [
       "#tmp_button-35872", // Submit button
     ],
     elementsToDisable: [
@@ -94,7 +94,7 @@ window.KeapFunnelConfig = {
       "#input-13475", // Email input
       "#input-72924", // Phone input
     ],
-    elementsToShowAfterSubmit: [
+    elementsToShowAfterSessionStart: [
       "#headline-93357", // Billing Information headline
       "#tmp_image-96949", // credit card logos
       "#tmp_orb-35379", // order bump
