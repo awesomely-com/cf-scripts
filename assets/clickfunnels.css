@@ -64,41 +64,6 @@ html:not([data-is-editing]) #tmp_button-78442 {
   margin-top: 30px !important;
 }
 
-/* Hide the contact information submit button */
-html:not([data-is-editing]) #tmp_button-35872 {
-  display: none;
-}
-
-/* Hide the secure checkout image until after the session is loaded */
-html:not([data-is-editing]) #img-11614 {
-  display: none;
-}
-
-/* Hide the disclaimer headline until after the session is loaded */
-html:not([data-is-editing]) #headline-20568 {
-  display: none;
-}
-
-/* Hide the order bump until after the session is loaded */
-html:not([data-is-editing]) #tmp_orb-35379 {
-  display: none;
-}
-
-/* Hide the credit card logos until after the session is loaded */
-html:not([data-is-editing]) #tmp_image-96949 {
-  display: none;
-}
-
-/* Hide the billing information headline until after the session is loaded */
-html:not([data-is-editing]) #headline-93357 {
-  display: none;
-}
-
-/* Hide the order summary until after the session is loaded */
-html:not([data-is-editing]) #tmp_orpo-82167 {
-  display: none;
-}
-
 #tmp_cb_headline1-12652 {
   padding-left: 15%;
 }
