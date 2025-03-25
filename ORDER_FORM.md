@@ -138,7 +138,7 @@ Note that if any IDs for these elements are changed, you will need to specify th
 
 In the Custom CSS editor, import the following:
 
-`@import url('https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@main/assets/clickfunnels.css');`
+`@import url('https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@latest/assets/clickfunnels.css');`
 
 This should be the first line of CSS in the Custom CSS editor, and any modifications can be added after that.
 
@@ -146,7 +146,7 @@ This should be the first line of CSS in the Custom CSS editor, and any modificat
 
 In the Footer Tracking code editor, enter the following as the first line of code:
 
-`<script src="https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@main/dist/order-form.js"></script>`.
+`<script src="https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@latest/dist/order-form.js"></script>`.
 
 ### Customizing
 
@@ -158,7 +158,7 @@ window.KeapFunnelConfig = {
   // customizations here. Refer to the KeapFunnelConfig object documentation above.
 };
 </script>
-<script src="https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@main/dist/order-form.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@latest/dist/order-form.js"></script>
 ```
 
 ---
