@@ -2,6 +2,59 @@
 
 A JavaScript library for handling Keap payment integrations within ClickFunnels pages. This specifically covers the order-form.ts file that's heavily customized to work around the limitations of the Keap payment iframe and with our custom backend.
 
+## Usage
+
+This is meant to be applied to the order form page of the Awesomely Clickfunnels funnel. In almost all cases, this will be step 2 of the funnel, where step 1 should be the contact information form.
+
+This also assumes that all product information and steps have been set up in the Awesomely Funnels database.
+
+### Ensure page elements are present
+
+The following page elements need to exist in order for the order form to load correctly.
+
+1. Custom contact Information submit button `selectors.contactInformationSubmitButton`
+2. Billing Information Header
+3. Custom HTML for Keap iframe
+4. Credit Card logo image
+5. Custom HTML for displaying Order Total
+6. Custom Order button `selectors.orderButton`
+
+Note that if any IDs for these elements are changed, you will need to specify the new IDs in the KeapFunnelConfig object.
+
+#### Notes on the removal of some legacy page elements
+
+### Notes on traditional Page Elements that may exist in legacy CF order form pages
+
+- Removed JS for order total, as this is now handled by our new custom script
+- Removed old primary submit button, as we now have a custom order button with no action that will submit the form
+
+### Import CSS
+
+In the Custom CSS editor, import the following:
+
+`@import url('https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@latest/assets/order-form.css');`
+
+This should be the first line of CSS in the Custom CSS editor, and any modifications can be added after that.
+
+### Import JS
+
+In the Footer Tracking code editor, enter the following as the first line of code:
+
+`<script src="https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@latest/dist/order-form.js"></script>`.
+
+### Customizing
+
+Many of the elements that need to be styled by CSS or modified by JS have unique IDs, and the defaults correspond to the original implementation of the APP funnel curing development. Some element IDs may be different for your order form. If so, you may customize the CSS by adding any modifications after the import. As for the JS, the script that loads will take into account anything that you want to specify in the KeapFunnelConfig object BEFORE loading the script.
+
+```javascript
+<script>
+window.KeapFunnelConfig = {
+  // customizations here. Refer to the KeapFunnelConfig object documentation above.
+};
+</script>
+<script src="https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@latest/dist/order-form.js"></script>
+```
+
 ## Development Setup
 
 ### Prerequisites
@@ -112,55 +165,6 @@ window.KeapFunnelConfig = {
 };
 ```
 
-## Usage
-
-### Ensure page elements are present
-
-The following page elements need to exist in order for the order form to load correctly.
-
-1. Custom contact Information submit button `selectors.contactInformationSubmitButton`
-2. Billing Information Header
-3. Custom HTML for Keap iframe
-4. Credit Card logo image
-5. Custom HTML for displaying Order Total
-6. Custom Order button `selectors.orderButton`
-
-Note that if any IDs for these elements are changed, you will need to specify the new IDs in the KeapFunnelConfig object.
-
-#### Notes on the removal of some legacy page elements
-
-### Notes on traditional Page Elements that may exist in legacy CF order form pages
-
-- Removed JS for order total, as this is now handled by our new custom script
-- Removed old primary submit button, as we now have a custom order button with no action that will submit the form
-
-### Import CSS
-
-In the Custom CSS editor, import the following:
-
-`@import url('https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@latest/assets/clickfunnels.css');`
-
-This should be the first line of CSS in the Custom CSS editor, and any modifications can be added after that.
-
-### Import JS
-
-In the Footer Tracking code editor, enter the following as the first line of code:
-
-`<script src="https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@latest/dist/order-form.js"></script>`.
-
-### Customizing
-
-Many of the elements that need to be styled by CSS or modified by JS have unique IDs, and the defaults correspond to the original implementation of the APP funnel curing development. Some element IDs may be different for your order form. If so, you may customize the CSS by adding any modifications after the import. As for the JS, the script that loads will take into account anything that you want to specify in the KeapFunnelConfig object BEFORE loading the script.
-
-```javascript
-<script>
-window.KeapFunnelConfig = {
-  // customizations here. Refer to the KeapFunnelConfig object documentation above.
-};
-</script>
-<script src="https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@latest/dist/order-form.js"></script>
-```
-
 ---
 
 ## Implementation
@@ -220,30 +224,95 @@ Comprehensive error handling for:
 - Requires Keap's payment iframe script (`payment-method-embed.js`)
 - Compatible with ClickFunnels' storage system
 
-## Security
+---
 
-- Secure payment processing via Keap's iframe
-- Session expiration handling
-- No sensitive data storage in browser
-- URL parameter sanitization
+## Example Implementation: ODF
 
-## Code Structure
+The below assumes that you are editing step 2, AKA the order form page, of the ODF funnel.
 
-- `src/clickfunnels.ts` - Main TypeScript file containing all the functionality
-- `src/keap-client.ts` - Client for interacting with the Keap API
-- `src/utils.ts` - Utility functions for browser detection, URL handling, etc.
-- `src/floating-labels.ts` - Styling for form labels
+- Create a subheadline element directly above the contact information fields
+  - Text: Contact Information
+  - Top-margin: `15px`
+  - Font-size: `18px`
+  - Mobile font-size: `16px`
+- Create a Button beneath the Conact Information fields
+  - Button Text: `Continue`
+- Change the “Payment Info” text to “Billing Information”
+- Remove the Credit Card fields (not the credit card logo image)
+- Set the top margin of the element with the credit card logo image to `0px`
+- Between the Billing Information heading and the Credit Card logos, place a Custom JS/HTML element with the following code:
+  - `<keap-payment-method id="keap-payment-method" />`
+  - Set the top margin of this element to `0px`
+- Remove the Billing Address heading
+- Remove the Billing Address fields
+- Select the Custom JS/HTML block below the list of order items (the one that usually has the text “Dynamically Updated”). It’ll have code where the first line is: `<div class="elOrderProductOptions">`. Paste in the following code in its entirety:
 
-## Browser Compatibility
+```html
+<div class="elOrderProductOptions">
+  <div class="clearfix elOrderProductOptinLabel ordertotalprice">
+    <div class="pull-left elOrderProductOptinItem">Order Total</div>
+    <div class="pull-right elOrderProductOptinLabelPrice">
+      <span id="order-total" class="productTotal">$</span>
+    </div>
+  </div>
+</div>
+```
 
-The script is designed to work with modern browsers and includes checks to ensure it only runs in browser environments.
+- Remove the existing form submit button (“Click to Continue”), as it is connected to the rest of the form - we will be using a custom submit function.
+- Create a button element
+  - Button Text: “Continue”
+- Note the IDs of the following elements:
+  - Billing Information headline: `#headline-55849`
+  - Contact Information submit button: `#tmp_button-11004`
+  - Order Button (last submit button on the page): `#tmp_button-42404`
+- Open some text editor where you can save code temporarily and:
+  - Open the Footer Tracking code portion and save the current JS to your text editor
+  - Open the Custom CSS and save that as well
+- Replace all the Footer Tracking code with the link to the external order form script
+- Replace all the Custom CSS by importing the order form CSS
+  - The buttons and some other elements may have a different look - use the CSS you saved in the editor to restore some of the styles. For instance, you may want to copy this code back in:
 
-## Troubleshooting
+```css
+.elButton {
+  width: 100%;
+  background-color: rgb(22, 168, 100);
+  background-image: linear-gradient(
+    20deg,
+    rgba(22, 168, 100, 1) 0%,
+    rgba(27, 199, 119, 1) 75%
+  ) !important;
+  box-shadow: 0 0 5px #ccc, 1px 5px 5px #ccc;
+}
 
-If you encounter issues during development:
+/* for some reason, the order button has margin-top of 0 that just won't go away, so we'll need to override it */
+#tmp_button-42404 {
+  margin-top: 30px !important;
+}
+```
 
-1. Make sure you have the latest version of Bun installed
-2. Check that all browser-specific code is properly wrapped in environment checks
-3. For production issues, test the bundled file in a browser before deploying to ClickFunnels
-4. Check browser console logs for detailed error messages
-5. Verify that the contact ID is being correctly passed in URL parameters when using the direct contact ID flow
+- Try previewing it - you may see that some elements that should be hidden are incorrectly showing. We’ll need to configure the JS to hide them using the IDs you noted earlier. In the Footer Tracking code, add this JS **before** linking to the external order form script. Show below is the **entirety** of the footer tracking code:
+
+```javascript
+<script>
+window.KeapFunnelConfig = {
+  selectors: {
+    contactInformationSubmitButton: "#tmp_button-11004",
+    orderButton: "#tmp_button-42404",
+    elementsToHideAfterSessionStart: [
+      "#tmp_button-11004", // contact information submit button
+    ],
+    elementsToShowAfterSessionStart: [
+      "#headline-55849", // billing information headline
+      "#tmp_button-42404", // submit order button
+      "#tmp_orb-35379", // order bump
+    ]
+  }
+};
+</script>
+
+<script src="https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@latest/dist/order-form.js"></script>
+```
+
+Some of the elements are already hidden/shown by default after the payment session starts, such as the Secure Checkout image, the legalise at the bottom, etc. because a lot of the order form pages share the same IDs for these elements since they were cloned from each other. However, you can reference the docs in case the IDs for these change and you want to specify them in the config directly.
+
+This should complete the integration of the custom order form script for ODF.
