@@ -1,294 +1,298 @@
 @font-face {
-  font-family: "Sul Sans";
-  src: url("https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@latest/Sul-Sans-Regular.otf")
-    format("opentype");
-  font-weight: normal;
-  font-style: normal;
+	font-family: "Sul Sans";
+	src: url("https://cdn.jsdelivr.net/gh/awesomely-com/cf-scripts@latest/Sul-Sans-Regular.otf")
+		format("opentype");
+	font-weight: normal;
+	font-style: normal;
 }
 
 :root {
-  --payment-method-iframe-width: calc(100% + 32px);
-  --payment-method-iframe-margin: 0 -16px -20px;
-  --input-background: #f8f9fd;
+	--payment-method-iframe-width: calc(100% + 32px);
+	--payment-method-iframe-margin: 0 -16px -20px;
+	--input-background: #f8f9fd;
 
-  @media (max-width: 767px) {
-    --payment-method-iframe-width: calc(100% + 20px);
-    --payment-method-iframe-margin: 0 -10px -20px;
-  }
+	@media (max-width: 767px) {
+		--payment-method-iframe-width: calc(100% + 20px);
+		--payment-method-iframe-margin: 0 -10px -20px;
+	}
 }
 
 html {
-  height: 100%;
+	height: 100%;
 }
 body {
-  min-height: 100%;
-  background-image: url("https://images.clickfunnels.com/d0/85525aa57e479084e2381057966a64/38941fcdb128a08df25ba1c31d58c737-1.png");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-attachment: fixed !important;
+	min-height: 100%;
+	background-image: url("https://images.clickfunnels.com/d0/85525aa57e479084e2381057966a64/38941fcdb128a08df25ba1c31d58c737-1.png");
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-attachment: fixed !important;
 }
 .countdown {
-  font-family: "Open Sans", sans-serif;
-  color: #fff;
-  font-size: 16px;
-  text-align: center;
-  display: block;
-  margin: 0 auto;
-  font-weight: bold;
+	font-family: "Open Sans", sans-serif;
+	color: #fff;
+	font-size: 16px;
+	text-align: center;
+	display: block;
+	margin: 0 auto;
+	font-weight: bold;
 }
 #headline-73264 .elHeadline b {
-  background: #fffdd1;
-  padding: 0 5px;
+	background: #fffdd1;
+	padding: 0 5px;
 }
 .elScreenshot_text_padding {
-  padding: 0 !important;
+	padding: 0 !important;
 }
 a[href^="tel"] {
-  color: inherit; /* Inherit text color of parent element. */
-  text-decoration: none; /* Remove underline. */
+	color: inherit; /* Inherit text color of parent element. */
+	text-decoration: none; /* Remove underline. */
 }
 
 /* Hide elements only when NOT in editing mode */
 html:not([data-is-editing]) #tmp_ors-61891 {
-  display: none !important;
+	display: none !important;
 }
 
 /* Hide the primary submit button for the page */
 html:not([data-is-editing]) #tmp_button-78442 {
-  display: none !important;
+	display: none !important;
 }
 
 /* Handle Order button, the one that subnits everything after a payment method is added */
 #tmp_button-23692 {
-  margin-top: 30px !important;
+	margin-top: 30px !important;
 }
 
 #tmp_cb_headline1-12652 {
-  padding-left: 15%;
+	padding-left: 15%;
 }
 
 #headline-61002 div {
-  padding-top: 6px;
+	padding-top: 6px;
 }
 
 #headline-92871 div {
-  padding-bottom: 3px;
+	padding-bottom: 3px;
 }
 
 .elButton {
-  background-image: linear-gradient(
-    to top right,
-    #fd481b 0%,
-    #ffc837 100%
-  ) !important;
-  box-shadow: 0 0 5px #ccc, 1px 5px 5px #ccc;
+	background-color: rgb(22, 168, 100);
+	background-image: linear-gradient(
+		20deg,
+		rgba(22, 168, 100, 1) 0%,
+		rgba(27, 199, 119, 1) 75%
+	) !important;
+	box-shadow: 0 0 5px #ccc, 1px 5px 5px #ccc;
+	padding: 15px 25px !important;
+	font-weight: bold !important;
+	font-family: "Open Sans", Helvetica, sans-serif !important;
+	width: 100% !important;
 }
 .elButton:hover {
-  background-position: right center !important;
-  cursor: pointer;
-  box-shadow: 0 0 5px #bbb, 1px 5px 5px #bbb;
+	background-position: right center !important;
+	cursor: pointer;
+	box-shadow: 0 0 5px #bbb, 1px 5px 5px #bbb;
 }
 
 #img-79827 {
-  background: #bbb !important;
-  padding: 10px;
+	background: #bbb !important;
+	padding: 10px;
 }
 
 #headline-92871 {
-  padding-bottom: 5px !important;
+	padding-bottom: 5px !important;
 }
 
 .ordertotalprice {
-  border-top: 1px solid #ddd;
-  border-bottom: none;
-  margin: 5px 0px 0px;
+	border-top: 1px solid #ddd;
+	border-bottom: none;
+	margin: 5px 0px 0px;
 }
 
 #row--69561 {
-  border-radius: 0 !important;
-  border-top-left-radius: 10px !important;
-  border-top-right-radius: 10px !important;
-  border-top: 2px solid #ddd !important;
-  border-right: 2px solid #ddd !important;
-  border-left: 2px solid #ddd !important;
-  padding: 0 !important;
-  background: #f8f9fd !important;
+	border-radius: 0 !important;
+	border-top-left-radius: 10px !important;
+	border-top-right-radius: 10px !important;
+	border-top: 2px solid #ddd !important;
+	border-right: 2px solid #ddd !important;
+	border-left: 2px solid #ddd !important;
+	padding: 0 !important;
+	background: #f8f9fd !important;
 }
 
 #container-57373 {
-  margin-top: -20px !important;
-  max-width: 1112px;
-  border-radius: 0 !important;
-  border-bottom: 2px solid #ddd !important;
-  border-right: 2px solid #ddd !important;
-  border-left: 2px solid #ddd !important;
-  border-bottom-left-radius: 10px !important;
-  border-bottom-right-radius: 10px !important;
-  background: #f8f9fd !important;
+	margin-top: -20px !important;
+	max-width: 1112px;
+	border-radius: 0 !important;
+	border-bottom: 2px solid #ddd !important;
+	border-right: 2px solid #ddd !important;
+	border-left: 2px solid #ddd !important;
+	border-bottom-left-radius: 10px !important;
+	border-bottom-right-radius: 10px !important;
+	background: #f8f9fd !important;
 }
 
 #col-left-126 {
-  margin-top: 0 !important;
-  background: #fff !important;
-  border-top-left-radius: 10px !important;
-  border-right: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-  padding-top: 20px !important;
-  padding-bottom: 30px !important;
+	margin-top: 0 !important;
+	background: #fff !important;
+	border-top-left-radius: 10px !important;
+	border-right: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+	padding-top: 20px !important;
+	padding-bottom: 30px !important;
 }
 
 #headline-98782 {
-  max-width: 500px;
-  display: block;
-  margin: 0 auto;
+	max-width: 500px;
+	display: block;
+	margin: 0 auto;
 }
 .elScreenshot_image {
-  max-width: 100px;
-  display: block;
-  margin: 0 auto;
+	max-width: 100px;
+	display: block;
+	margin: 0 auto;
 }
 .ccNumberWrap span,
 .ccCVCWrap span {
-  display: none !important;
+	display: none !important;
 }
 
 .accordion {
-  background: none;
-  border-bottom: 1px solid #ddd;
-  color: #0b60a2;
-  text-decoration: underline;
-  cursor: pointer;
-  padding: 18px;
-  width: 100%;
-  border: none;
-  text-align: center;
-  outline: none;
-  font-size: 16px;
-  font-weight: 800 !important;
-  transition: 0.4s;
+	background: none;
+	border-bottom: 1px solid #ddd;
+	color: #0b60a2;
+	text-decoration: underline;
+	cursor: pointer;
+	padding: 18px;
+	width: 100%;
+	border: none;
+	text-align: center;
+	outline: none;
+	font-size: 16px;
+	font-weight: 800 !important;
+	transition: 0.4s;
 }
 
 .active,
 .accordion:hover {
-  background-color: #eee;
+	background-color: #eee;
 }
 
 .panel {
-  padding: 20px;
-  font-size: 16px;
-  text-align: left;
-  display: none;
-  overflow: hidden;
+	padding: 20px;
+	font-size: 16px;
+	text-align: left;
+	display: none;
+	overflow: hidden;
 }
 
 #tmp_paragraph-37175 a {
-  text-decoration: underline !important;
+	text-decoration: underline !important;
 }
 
 @media screen and (max-width: 780px) {
-  #headline-66146,
-  #img-79827 {
-    padding-top: 20px;
-  }
-  #tmp_image-80980 img {
-    max-width: 150px !important;
-    display: block !important;
-    margin: 0 auto -20px auto !important;
-  }
+	#headline-66146,
+	#img-79827 {
+		padding-top: 20px;
+	}
+	#tmp_image-80980 img {
+		max-width: 150px !important;
+		display: block !important;
+		margin: 0 auto -20px auto !important;
+	}
 }
 
 .nameFieldWrapper {
-  display: flex;
-  gap: 20px;
+	display: flex;
+	gap: 20px;
 
-  & > .elInputWrapper {
-    margin-top: 0px !important;
-    flex-grow: 1;
-  }
+	& > .elInputWrapper {
+		margin-top: 0px !important;
+		flex-grow: 1;
+	}
 }
 
 .cityFieldWrapper {
-  display: flex;
-  gap: 0px 20px;
+	display: flex;
+	gap: 0px 20px;
 
-  & > fieldset {
-    width: 20%;
+	& > fieldset {
+		width: 20%;
 
-    &:first-child {
-      width: auto;
-      flex-grow: 1;
-    }
-  }
+		&:first-child {
+			width: auto;
+			flex-grow: 1;
+		}
+	}
 }
 
 .elInput {
-  margin-top: 0 !important;
+	margin-top: 0 !important;
 }
 
 .elCreditCardForm {
-  display: flex;
-  gap: 0px 20px;
+	display: flex;
+	gap: 0px 20px;
 
-  .ccStripeElementExp {
-    padding-right: 0;
-  }
+	.ccStripeElementExp {
+		padding-right: 0;
+	}
 }
 .ccInputText {
-  margin-bottom: 5px;
-  color: #383838;
-  font-weight: normal !important;
+	margin-bottom: 5px;
+	color: #383838;
+	font-weight: normal !important;
 }
 fieldset {
-  display: flex;
-  justify-content: start;
-  align-items: start;
-  flex-direction: column;
-  margin-top: 10px;
+	display: flex;
+	justify-content: start;
+	align-items: start;
+	flex-direction: column;
+	margin-top: 10px;
 
-  & > .ccInputText,
-  & > label {
-    text-align: start;
-    margin-bottom: 5px;
-    color: #383838;
-    font-weight: 400;
-  }
+	& > .ccInputText,
+	& > label {
+		text-align: start;
+		margin-bottom: 5px;
+		color: #383838;
+		font-weight: 400;
+	}
 
-  & > input {
-    width: 100% !important;
-    margin: 0 !important;
-  }
+	& > input {
+		width: 100% !important;
+		margin: 0 !important;
+	}
 }
 
 .ccInput {
-  border-radius: 5px !important;
+	border-radius: 5px !important;
 }
 
 select[name="country"] {
-  background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gVXBsb2FkZWQgdG86IFNWRyBSZXBvLCB3d3cuc3ZncmVwby5jb20sIEdlbmVyYXRvcjogU1ZHIFJlcG8gTWl4ZXIgVG9vbHMgLS0+DQo8c3ZnIGZpbGw9IiMwMDAwMDAiIHdpZHRoPSIxMHB4IiBoZWlnaHQ9ImF1dG8iIHZpZXdCb3g9Ii02LjUgMCAzMiAzMiIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPg0KPHRpdGxlPmRyb3Bkb3duPC90aXRsZT4NCjxwYXRoIGQ9Ik0xOC44MTMgMTEuNDA2bC03LjkwNiA5LjkwNmMtMC43NSAwLjkwNi0xLjkwNiAwLjkwNi0yLjYyNSAwbC03LjkwNi05LjkwNmMtMC43NS0wLjkzOC0wLjM3NS0xLjY1NiAwLjc4MS0xLjY1NmgxNi44NzVjMS4xODggMCAxLjUzMSAwLjcxOSAwLjc4MSAxLjY1NnoiPjwvcGF0aD4NCjwvc3ZnPg==);
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 1em;
-  cursor: pointer;
+	background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gVXBsb2FkZWQgdG86IFNWRyBSZXBvLCB3d3cuc3ZncmVwby5jb20sIEdlbmVyYXRvcjogU1ZHIFJlcG8gTWl4ZXIgVG9vbHMgLS0+DQo8c3ZnIGZpbGw9IiMwMDAwMDAiIHdpZHRoPSIxMHB4IiBoZWlnaHQ9ImF1dG8iIHZpZXdCb3g9Ii02LjUgMCAzMiAzMiIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPg0KPHRpdGxlPmRyb3Bkb3duPC90aXRsZT4NCjxwYXRoIGQ9Ik0xOC44MTMgMTEuNDA2bC03LjkwNiA5LjkwNmMtMC43NSAwLjkwNi0xLjkwNiAwLjkwNi0yLjYyNSAwbC03LjkwNi05LjkwNmMtMC43NS0wLjkzOC0wLjM3NS0xLjY1NiAwLjc4MS0xLjY1NmgxNi44NzVjMS4xODggMCAxLjUzMSAwLjcxOSAwLjc4MSAxLjY1NnoiPjwvcGF0aD4NCjwvc3ZnPg==);
+	background-repeat: no-repeat;
+	background-position: right 1rem center;
+	background-size: 1em;
+	cursor: pointer;
 }
 
 select[name="country"]:invalid {
-  color: fieldtext !important;
+	color: fieldtext !important;
 }
 
 @media only screen and (max-width: 450px) {
-  .cityFieldWrapper,
-  .elCreditCardForm {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    & > fieldset,
-    & > div {
-      width: 100%;
-      &:first-child {
-        grid-column: 1 / -1;
-      }
-    }
-  }
+	.cityFieldWrapper,
+	.elCreditCardForm {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		& > fieldset,
+		& > div {
+			width: 100%;
+			&:first-child {
+				grid-column: 1 / -1;
+			}
+		}
+	}
 }
 
 /* #tmp_orb-35379 .sectioncontent {
@@ -296,64 +300,64 @@ cursor: pointer;
 } */
 
 input[type="checkbox"] {
-  width: 2rem;
-  height: 2rem;
-  margin: 0 0.5rem 0.1rem -1.75rem !important;
+	width: 2rem;
+	height: 2rem;
+	margin: 0 0.5rem 0.1rem -1.75rem !important;
 }
 
 .cc-number,
 .cc-exp,
 .cc-cvc {
-  font-size: 16px !important;
+	font-size: 16px !important;
 }
 
 .input-container {
-  position: relative;
+	position: relative;
 }
 .input-container > .elInput {
-  border-radius: 0.75rem !important;
-  border: 1px solid rgb(204, 204, 204);
-  font-family: "Sul Sans", Helvetica, Arial, sans-serif;
-  font-size: 14px;
-  padding: 8px 16px;
-  width: 100%;
-  border-radius: 5px;
-  outline: none;
-  transition: border 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+	border-radius: 0.75rem !important;
+	border: 1px solid rgb(204, 204, 204);
+	font-family: "Sul Sans", Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	padding: 8px 16px;
+	width: 100%;
+	border-radius: 5px;
+	outline: none;
+	transition: border 0.25s cubic-bezier(0.23, 1, 0.32, 1);
 
-  &:focus {
-    border-color: #006ceb;
-  }
+	&:focus {
+		border-color: #006ceb;
+	}
 }
 .floating-label {
-  position: absolute;
-  top: 50%;
-  left: 10px;
-  transform: translateY(-50%);
-  /* background: linear-gradient(to top,transparent,transparent 42%,var(--input-background, white) 42%,var(--input-background, white) 51%,transparent 51%); */
-  background-color: white;
-  padding: 0 7px;
-  transition: left 0.25s cubic-bezier(0.23, 1, 0.32, 1),
-    top 0.25s cubic-bezier(0.23, 1, 0.32, 1),
-    font-size 0.25s cubic-bezier(0.23, 1, 0.32, 1),
-    color 0.25s cubic-bezier(0.23, 1, 0.32, 1);
-  color: #0009;
-  pointer-events: none;
-  line-height: calc(var(--input-font-size, 0.875rem) * 1.5);
-  font-size: 14px;
-  padding: 0 0.25rem;
-  font-weight: 500;
-  font-family: Sul Sans, Helvetica, Arial, sans-serif;
+	position: absolute;
+	top: 50%;
+	left: 10px;
+	transform: translateY(-50%);
+	/* background: linear-gradient(to top,transparent,transparent 42%,var(--input-background, white) 42%,var(--input-background, white) 51%,transparent 51%); */
+	background-color: white;
+	padding: 0 7px;
+	transition: left 0.25s cubic-bezier(0.23, 1, 0.32, 1),
+		top 0.25s cubic-bezier(0.23, 1, 0.32, 1),
+		font-size 0.25s cubic-bezier(0.23, 1, 0.32, 1),
+		color 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+	color: #0009;
+	pointer-events: none;
+	line-height: calc(var(--input-font-size, 0.875rem) * 1.5);
+	font-size: 14px;
+	padding: 0 0.25rem;
+	font-weight: 500;
+	font-family: Sul Sans, Helvetica, Arial, sans-serif;
 }
 .input-field:focus + .floating-label,
 .input-field:not(:placeholder-shown) + .floating-label {
-  top: 0;
-  left: 15px;
-  font-size: 12px;
+	top: 0;
+	left: 15px;
+	font-size: 12px;
 }
 
 .input-container:focus-within .floating-label {
-  color: #006ceb;
+	color: #006ceb;
 }
 
 /* Normal state - keep original gradient */
@@ -365,62 +369,62 @@ background: linear-gradient(to top right, #fd481b 0%, #FFC837 100%) !important;
 
 /* When submitting - overlay a semi-transparent gray layer */
 button[data-state="submitting"] .elButton {
-  position: relative;
+	position: relative;
 }
 
 button[data-state="submitting"] .elButton::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(200, 200, 200, 0.7);
-  pointer-events: none;
-  z-index: 1;
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(200, 200, 200, 0.7);
+	pointer-events: none;
+	z-index: 1;
 }
 
 /* Ensure text remains on top of the overlay */
 button[data-state="submitting"] .elButtonMain {
-  position: relative;
-  z-index: 2;
+	position: relative;
+	z-index: 2;
 }
 
 /* Spinning arrow animation */
 button[data-state="submitting"] .elButtonMain::after {
-  content: " ⟳";
-  display: inline-block;
-  margin-left: 8px;
-  animation: spin 1s linear infinite;
+	content: " ⟳";
+	display: inline-block;
+	margin-left: 8px;
+	animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
 }
 
 /* Handle elements that should be hidden until session start */
 html:not([data-is-editing]) .hidden-until-session-start {
-  display: none !important;
+	display: none !important;
 }
 
 /* Handle elements that should be shown after session start */
 html:not([data-is-editing]).shown-after-session-start {
-  display: block !important;
+	display: block !important;
 }
 
 /* Handle normal input containers to match margins of payment iframe in mobile */
 .input-container {
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 24px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 24px;
 
-  @media (max-width: 767px) {
-    margin-left: 6px;
-    margin-right: 6px;
-  }
+	@media (max-width: 767px) {
+		margin-left: 6px;
+		margin-right: 6px;
+	}
 }
