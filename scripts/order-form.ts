@@ -1218,6 +1218,21 @@ class KeapFunnelHandler {
 			}, 3000);
 		} else {
 			console.warn("No next step URL found in response:", response);
+			const orderButton = document.querySelector(
+				this.config.selectors.orderButton
+			) as HTMLElement | null;
+			if (orderButton) {
+				this.handleOrderError(
+					new Error(
+						response.message +
+							` - Please review your details and try again.` ||
+							"No next step URL found in response"
+					),
+					orderButton
+				);
+			} else {
+				console.warn("No order button found, cannot reset button state");
+			}
 		}
 	}
 
