@@ -263,6 +263,9 @@ class KeapFunnelHandler {
       // First check for contact ID or session key in URL
       this.checkUrlSessionKey();
 
+      // Hide phone field initially
+      this.hidePhoneField();
+
       // Show submit button if no contact ID is present (do this right after checking URL)
       this.showSubmitButtonIfNeeded();
 
@@ -516,7 +519,11 @@ class KeapFunnelHandler {
         // Show alert and reset button if it exists
         alert(errorMessage);
         if (contactInformationSubmitButton) {
-          this.setButtonState(contactInformationSubmitButton, false, "Submit");
+          this.setButtonState(
+            contactInformationSubmitButton,
+            false,
+            "Continue"
+          );
         }
         return;
       }
@@ -716,6 +723,9 @@ class KeapFunnelHandler {
           if (orderButton instanceof HTMLElement) {
             orderButton.style.display = "block";
           }
+
+          // Show phone field once the iframe is loaded
+          this.showPhoneField();
         }
       }
     }, 100);
@@ -1625,6 +1635,31 @@ class KeapFunnelHandler {
       }
     } else {
       console.log("Contact ID found, submit button will remain hidden");
+    }
+  }
+
+  // Add methods to hide and show phone field
+  hidePhoneField(): void {
+    const phoneFieldContainer = document
+      .querySelector(this.config.selectors.formFields.phone)
+      ?.closest(".elInputWrapper");
+
+    if (phoneFieldContainer instanceof HTMLElement) {
+      phoneFieldContainer.style.display = "none";
+    } else {
+      console.warn("Phone field container not found");
+    }
+  }
+
+  showPhoneField(): void {
+    const phoneFieldContainer = document
+      .querySelector(this.config.selectors.formFields.phone)
+      ?.closest(".elInputWrapper");
+
+    if (phoneFieldContainer instanceof HTMLElement) {
+      phoneFieldContainer.style.display = "block";
+    } else {
+      console.warn("Phone field container not found");
     }
   }
 }
