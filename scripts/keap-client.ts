@@ -55,18 +55,18 @@ export class KeapClient {
       body: data ? JSON.stringify(data) : undefined,
     });
 
-    if (!response.ok) {
-      console.warn(`API request failed with status ${response.status}`);
-      if (response.status === 400) {
-        const errorData = await response.json();
-        console.error("API error details:", errorData);
-        if (errorData.message === "Session has expired") {
-          // Session expired
-          console.log("Session has expired");
-        }
-      }
-      throw new Error(`API request failed: ${response.statusText}`);
-    }
+    // if (!response.ok) {
+    //   console.warn(`API request failed with status ${response.status}`);
+    //   if (response.status === 400) {
+    //     const errorData = await response.json();
+    //     console.error("API error details:", errorData);
+    //     if (errorData.message === "Session has expired") {
+    //       // Session expired
+    //       console.log("Session has expired");
+    //     }
+    //   }
+    //   throw new Error(`API request failed: ${response.statusText}`);
+    // }
 
     const responseData = await response.json();
     console.log(`API Response from ${endpoint}:`, responseData);

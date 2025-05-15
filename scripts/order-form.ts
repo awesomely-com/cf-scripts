@@ -966,17 +966,40 @@ class KeapFunnelHandler {
       };
 
       try {
-        await this.keapClient.updateContact(contactId, contactUpdatePayload);
+        const updateContactResponse: {
+          success: boolean;
+          errors?: Record<string, string[]>;
+        } = await this.keapClient.updateContact(
+          contactId,
+          contactUpdatePayload
+        );
+        console.log("Update contact response:", updateContactResponse);
         console.log("Contact information updated successfully");
+        if (
+          !updateContactResponse.success &&
+          updateContactResponse.errors &&
+          Object.keys(updateContactResponse.errors).length > 0
+        ) {
+          console.error("Update contact errors:", updateContactResponse.errors);
+          throw new Error(
+            "Failed to update contact information.\n\nPlease fix the following:\n" +
+              Object.entries(updateContactResponse.errors)
+                .map(([_, errors]) => (errors as string[]).join("\n"))
+                .join("\n")
+          );
+        }
       } catch (contactUpdateError) {
         console.error(
           "Failed to update contact information:",
           contactUpdateError
         );
-        // This is now a critical error that should block the order
-        const errorMessage =
-          "Failed to update contact information. Please try again.";
-        this.handleOrderError(new Error(errorMessage), orderButton);
+        this.handleOrderError(
+          new Error(
+            (contactUpdateError as string) ??
+              "Failed to update contact information. Please try again."
+          ),
+          orderButton
+        );
         return;
       }
 
@@ -1161,7 +1184,7 @@ class KeapFunnelHandler {
       if (!data.success) {
         console.error("Payment method submission failed:", data);
         const errorMessage =
-          data.error ||
+          data.error.message ||
           "Payment method submission failed. Please check your payment details and try again.";
         this.handleOrderError(new Error(errorMessage), orderButton);
         return;
