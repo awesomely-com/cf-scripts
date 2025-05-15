@@ -25,6 +25,7 @@ interface Messages {
 }
 
 interface Selectors {
+  contactInformationHeading: string;
   contactInformationSubmitButton: string;
   orderButton: string;
   paymentMethod: string;
@@ -194,6 +195,8 @@ class KeapFunnelHandler {
   // Default configuration
   static defaultConfig = {
     selectors: {
+      contactInformationHeading:
+        "#headline-55849, .contact-information-heading",
       contactInformationSubmitButton: "#tmp_button-35872",
       orderButton: "#tmp_button-23692",
       paymentMethod: "#keap-payment-method",
@@ -726,6 +729,9 @@ class KeapFunnelHandler {
 
           // Show phone field once the iframe is loaded
           this.showPhoneField();
+
+          // Hide contact information fields but keep them in the DOM
+          this.hideContactInformationFields();
         }
       }
     }, 100);
@@ -1645,7 +1651,12 @@ class KeapFunnelHandler {
       ?.closest(".elInputWrapper");
 
     if (phoneFieldContainer instanceof HTMLElement) {
-      phoneFieldContainer.style.display = "none";
+      // Hide visually but keep it in the DOM and functional for submission
+      phoneFieldContainer.style.visibility = "hidden";
+      phoneFieldContainer.style.height = "0";
+      phoneFieldContainer.style.overflow = "hidden";
+      phoneFieldContainer.style.margin = "0";
+      phoneFieldContainer.style.padding = "0";
     } else {
       console.warn("Phone field container not found");
     }
@@ -1657,9 +1668,56 @@ class KeapFunnelHandler {
       ?.closest(".elInputWrapper");
 
     if (phoneFieldContainer instanceof HTMLElement) {
+      // Show visually and make it functional
+      phoneFieldContainer.style.visibility = "visible";
+      phoneFieldContainer.style.height = "auto";
+      phoneFieldContainer.style.overflow = "visible";
+      phoneFieldContainer.style.margin = "0";
       phoneFieldContainer.style.display = "block";
     } else {
       console.warn("Phone field container not found");
+    }
+  }
+
+  // Hide contact information fields and heading
+  hideContactInformationFields(): void {
+    // Hide the contact information heading
+    const contactHeading = document.querySelector(
+      this.config.selectors.contactInformationHeading
+    );
+    if (contactHeading instanceof HTMLElement) {
+      contactHeading.style.display = "none";
+    }
+
+    // Hide first name, last name, and email fields but keep them in the DOM
+    const firstNameContainer = document
+      .querySelector(this.config.selectors.formFields.firstName)
+      ?.closest(".elInputWrapper");
+
+    const lastNameContainer = document
+      .querySelector(this.config.selectors.formFields.lastName)
+      ?.closest(".elInputWrapper");
+
+    const emailContainer = document
+      .querySelector(this.config.selectors.formFields.email)
+      ?.closest(".elInputWrapper");
+
+    if (firstNameContainer instanceof HTMLElement) {
+      firstNameContainer.style.display = "none";
+    } else {
+      console.warn("First name field container not found");
+    }
+
+    if (lastNameContainer instanceof HTMLElement) {
+      lastNameContainer.style.display = "none";
+    } else {
+      console.warn("Last name field container not found");
+    }
+
+    if (emailContainer instanceof HTMLElement) {
+      emailContainer.style.display = "none";
+    } else {
+      console.warn("Email field container not found");
     }
   }
 }
