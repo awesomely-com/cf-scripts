@@ -4,6 +4,7 @@ import {
   getUrlParameter,
   getPageSlugFromUrl,
   formatPrice,
+  deepMerge,
 } from "./utils";
 import KeapClient from "./keap-client";
 
@@ -146,41 +147,6 @@ declare global {
   interface Window {
     KeapFunnelConfig?: Partial<KeapFunnelConfig>;
   }
-}
-
-// Deep merge utility function
-function deepMerge<T extends { [key: string]: any }>(
-  target: T,
-  source: Partial<T>
-): T {
-  const output = { ...target } as { [key: string]: any };
-
-  if (!source) return output as T;
-
-  Object.keys(source).forEach((key) => {
-    const targetValue = output[key];
-    const sourceValue = source[key as keyof T];
-
-    if (Array.isArray(targetValue) && Array.isArray(sourceValue)) {
-      // Merge arrays by concatenating and removing duplicates
-      output[key] = [...new Set([...targetValue, ...sourceValue])];
-    } else if (
-      typeof targetValue === "object" &&
-      targetValue !== null &&
-      typeof sourceValue === "object" &&
-      sourceValue !== null &&
-      !Array.isArray(targetValue) &&
-      !Array.isArray(sourceValue)
-    ) {
-      // Recursively merge nested objects
-      output[key] = deepMerge(targetValue, sourceValue);
-    } else if (sourceValue !== undefined) {
-      // For primitive values or when source value is explicitly set, override
-      output[key] = sourceValue;
-    }
-  });
-
-  return output as T;
 }
 
 class KeapFunnelHandler {
