@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<link rel="stylesheet" href="assets/oto-page.css" />
+		<link rel="stylesheet" href="assets/order-form.css" />
+	</head>
+	<body>
+		<dialog id="oto-decline-modal">
+			<h2>Your credit card was declined, please update your card.</h2>
+			<keap-payment-method id="keap-payment-method" />
+			<button type="submit" class="elButton">Click To Continue</button>
+		</dialog>
+	</body>
+	<script>
+		const dialog = document.getElementById("oto-decline-modal");
+		dialog.showModal();
+	</script>
+</html>
