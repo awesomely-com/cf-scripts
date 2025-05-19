@@ -93,7 +93,11 @@ export class KeapClient {
    * Start a new payment session
    */
   async startSession(payload: SessionPayload): Promise<any> {
-    return this.makeRequest("/start-payments-api-session", "POST", payload);
+    return this.makeRequest(
+      "/start-payments-api-session?phone_optional=true",
+      "POST",
+      payload
+    );
   }
 
   /**
@@ -104,7 +108,7 @@ export class KeapClient {
       firstName: string;
       lastName: string;
       email: string;
-      phone: string;
+      phone?: string;
     },
     sessionKey?: string,
     salesAwesomelyExternalKey?: any,

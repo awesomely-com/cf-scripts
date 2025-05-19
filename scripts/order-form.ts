@@ -507,6 +507,11 @@ class KeapFunnelHandler {
       const formData = this.getFormData();
       console.log("Form data collected:", formData);
 
+      // there may be instances that the phone field is not visible, but may exist as a hidden field, waiting to be revealed. if the value of the phone field is empty or not a number, remove it from the form data.
+      if (!formData.phone || isNaN(Number(formData.phone))) {
+        delete formData.phone;
+      }
+
       // Validate required fields for starting a session (phone is not required here)
       if (!formData.firstName || !formData.lastName || !formData.email) {
         const missingFields = [];
@@ -575,7 +580,7 @@ class KeapFunnelHandler {
     firstName: string;
     lastName: string;
     email: string;
-    phone: string;
+    phone?: string;
   } {
     const selectors = this.config.selectors.formFields;
     return {
