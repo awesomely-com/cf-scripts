@@ -6,8 +6,8 @@ import {
   deepMerge,
 } from "./utils";
 import KeapClient from "./keap-client";
+import type { CreateOrderPayload } from "./keap-client";
 
-// Interface definitions
 interface Selectors {
   acceptButton: string;
   acceptButton2: string;
@@ -99,9 +99,12 @@ interface OrderResponse {
   next_step_url?: string;
 }
 
+// Add a global interface to make TypeScript aware of our testing utilities
 declare global {
   interface Window {
     KeapOTOConfig?: Partial<KeapOTOConfig>;
+    simulatePaymentDecline?: (enable: boolean) => void;
+    _simulatePaymentDeclineEnabled?: boolean;
   }
 }
 
@@ -152,6 +155,20 @@ class KeapOTOHandler {
       contactId: null,
     };
     this.keapClient = new KeapClient();
+
+    // Add a global utility function to simulate payment declines for testing
+    if (isBrowser) {
+      window.simulatePaymentDecline = (enable = true) => {
+        window._simulatePaymentDeclineEnabled = enable;
+        console.log(
+          `Payment decline simulation ${enable ? "ENABLED" : "DISABLED"}`
+        );
+        console.log(
+          "The next payment attempt will " +
+            (enable ? "simulate a decline" : "process normally")
+        );
+      };
+    }
   }
 
   init(): void {
@@ -541,7 +558,7 @@ class KeapOTOHandler {
     const pageSlug = getPageSlugFromUrl();
     const selectedProductIds: number[] = [];
 
-    // Store the product ID for potential retry
+    // Store the poduct ID for potential retry
     this.pendingProductId = productId;
 
     // Add the selected product ID to the array
@@ -570,17 +587,31 @@ class KeapOTOHandler {
     const affiliateId = getUrlParameter("affiliate");
 
     // Create payload for the order
-    const payload: any = {
-      contact_id: this.state.keapContactId,
+    let payload: CreateOrderPayload = {
       payment_method_id: paymentMethodId,
-      session_key: this.state.sessionKey,
       page_slug: pageSlug,
       product_ids: selectedProductIds,
     };
 
+    if (this.state.keapContactId) {
+      payload.contact_id = this.state.keapContactId;
+    }
+
+    if (this.state.sessionKey) {
+      payload.session_key = this.state.sessionKey;
+    }
+
     // Add affiliate ID if present
     if (affiliateId) {
       payload.affiliate_id = affiliateId;
+    }
+
+    // Check if we should simulate a payment decline for testing
+    if (window._simulatePaymentDeclineEnabled) {
+      console.log("SIMULATING PAYMENT DECLINE (testing mode)");
+      payload.status = "declined"; // This parameter will be recognized by the API to simulate a decline
+      // Reset the flag after using it once
+      window._simulatePaymentDeclineEnabled = false;
     }
 
     try {

@@ -22,13 +22,14 @@ interface UpdateContactPayload {
   phone: string;
 }
 
-interface CreateOrderPayload {
-  contact_id: string;
+export interface CreateOrderPayload {
+  contact_id?: string;
   payment_method_id?: string;
-  session_key: string;
+  session_key?: string;
   page_slug: string;
   product_ids: number[];
   affiliate_id?: string;
+  status?: string;
 }
 
 interface OrderResponse {
