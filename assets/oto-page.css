@@ -1,32 +1,32 @@
 #oto-decline-modal {
-	border: none;
-	border-radius: 0.5rem;
-	width: clamp(300px, 90%, 400px);
-	padding: 2rem;
+  border: none;
+  border-radius: 0.5rem;
+  width: clamp(300px, 90%, 400px);
+  padding: 2rem;
+}
 
-	h2 {
-		text-align: center;
-		font-size: 1.5rem;
-		margin-bottom: 1rem;
-		margin-top: 0;
-		font-family: sans-serif;
-	}
+#oto-decline-modal h2 {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  margin-top: 0;
+  font-family: sans-serif;
+}
 
-	button {
-		margin-top: 1rem;
-		color: white;
-		border: none;
-		font-size: 1.35rem;
-		outline: none;
-		border-radius: 0.25rem;
-	}
+#oto-decline-modal button {
+  margin-top: 1rem;
+  color: white;
+  border: none;
+  font-size: 1.35rem;
+  outline: none;
+  border-radius: 0.25rem;
+}
 
-	&:focus-visible {
-		outline: none;
-		border: none;
-	}
+#oto-decline-modal:focus-visible {
+  outline: none;
+  border: none;
+}
 
-	&::backdrop {
-		background-color: rgba(0, 0, 0, 0.65);
-	}
+#oto-decline-modal::backdrop {
+  background-color: rgba(0, 0, 0, 0.65);
 }

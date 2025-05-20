@@ -14,6 +14,9 @@ interface Selectors {
   acceptButtonProduct2: string;
   rejectButton: string;
   paymentContainer: string;
+  // Modal selectors
+  modal: string;
+  modalSubmitButton: string;
 }
 
 interface SessionConfig {
@@ -47,26 +50,52 @@ interface OTOState {
   contactId: string | null;
 }
 
-interface APIResponse {
-  is_duplicate?: boolean;
+interface OrderResponse {
+  message?: string;
+  payment_status: "completed" | "failed" | "declined" | "error";
+  error?: string;
+  contact?: {
+    id: number;
+    email: string;
+    first_name?: string;
+    last_name?: string;
+    phone?: string;
+    keap_contact_id?: number;
+  };
+  order?: {
+    id: number;
+    status: string;
+    total_amount: number;
+    session_key?: string;
+    url_friendly_session_key?: string;
+  };
+  payment?: {
+    id: number;
+    amount: number;
+    status: string;
+    payment_method_id?: number;
+    keap_payment_method_id?: string;
+  };
+  page?: {
+    id: number;
+    name: string;
+    slug: string;
+  };
   step?: {
+    id: number;
+    name: string;
     next_step_url?: string;
     rejected_step_url?: string;
     products?: any[];
   };
-  order?: {
-    id?: number;
-    session_key?: string;
-    url_friendly_session_key?: string;
-  };
-  contact?: {
-    id?: number;
-    keap_contact_id?: number;
-  };
-  payment?: {
-    payment_method_id?: string;
-    keap_payment_method_id?: string;
-  };
+  products?: Array<{
+    id: number;
+    order_id: number;
+    product_id: number;
+    quantity: number;
+    price: number;
+  }>;
+  is_duplicate?: boolean;
   next_step_url?: string;
 }
 
@@ -81,6 +110,10 @@ class KeapOTOHandler {
   private state: OTOState;
   private initialized: boolean = false;
   private keapClient: KeapClient;
+  private handlePaymentMessage: (event: MessageEvent) => Promise<void> =
+    async () => {};
+  private paymentResponseTimeout: ReturnType<typeof setTimeout> | null = null;
+  private pendingProductId: number | null = null;
 
   // Default configuration
   static defaultConfig = {
@@ -90,6 +123,9 @@ class KeapOTOHandler {
       acceptButtonProduct2: "#product-2-button", // Accept button ID for second product (optional)
       rejectButton: "#link-94268", // Reject button ID
       paymentContainer: "#payment-container", // Container for payment form
+      // Modal selectors
+      modal: "#oto-decline-modal",
+      modalSubmitButton: "#retry-payment-submit",
     },
     sessionConfig: {
       expirationHours: 2,
@@ -251,7 +287,7 @@ class KeapOTOHandler {
 
       // Use KeapClient to start the payments API session
       try {
-        const response = await this.keapClient.makeRequest<APIResponse>(
+        const response = await this.keapClient.makeRequest<OrderResponse>(
           "/start-payments-api-session",
           "POST",
           payload
@@ -293,7 +329,7 @@ class KeapOTOHandler {
     }
   }
 
-  private updateState(data: APIResponse): void {
+  private updateState(data: OrderResponse): void {
     // Update state with data from API response
     if (data.contact && data.contact.id) {
       this.state.keapContactId = data.contact.id.toString();
@@ -505,6 +541,9 @@ class KeapOTOHandler {
     const pageSlug = getPageSlugFromUrl();
     const selectedProductIds: number[] = [];
 
+    // Store the product ID for potential retry
+    this.pendingProductId = productId;
+
     // Add the selected product ID to the array
     if (productId !== null) {
       selectedProductIds.push(productId);
@@ -549,6 +588,23 @@ class KeapOTOHandler {
       try {
         const response = await this.keapClient.createOrder(payload);
         console.log("Order created:", response);
+
+        // Check if payment was declined or failed
+        if (
+          response.payment_status === "failed" ||
+          response.payment_status === "declined" ||
+          response.payment_status === "error"
+        ) {
+          console.warn(
+            `Payment ${response.payment_status}: ${
+              response.error || response.message || "Unknown reason"
+            }`
+          );
+
+          // Show payment retry modal
+          this.showPaymentRetryModal();
+          return;
+        }
 
         // Create a session key parameter string to reuse
         const sessionKeyParam = `?session_key=${
@@ -609,7 +665,214 @@ class KeapOTOHandler {
       }
     } catch (error) {
       console.error("API request failed:", error);
+      // Show payment retry modal for any error during payment processing
+      this.showPaymentRetryModal();
     }
+  }
+
+  // Payment Decline Handling Methods
+  private async showPaymentRetryModal(): Promise<void> {
+    console.log("Showing payment retry modal");
+
+    // Check if modal already exists
+    let dialog = document.querySelector(
+      this.config.selectors.modal
+    ) as HTMLDialogElement | null;
+
+    if (!dialog) {
+      // Create dialog element if it doesn't exist
+      dialog = document.createElement("dialog");
+      dialog.id = this.config.selectors.modal.substring(1); // Remove # from id
+
+      // Create dialog content based on test-modal.html
+      dialog.innerHTML = `
+        <h2>Your credit card was declined, please update your card.</h2>
+        <keap-payment-method id="keap-payment-method"></keap-payment-method>
+        <button id="${this.config.selectors.modalSubmitButton.substring(
+          1
+        )}" class="elButton">Click To Continue</button>
+      `;
+
+      // No need to add styles as they are in assets/oto-page.css
+      document.body.appendChild(dialog);
+    }
+
+    // Display the dialog
+    dialog.showModal();
+
+    try {
+      // Get a new session key for the payment form
+      if (!this.state.keapContactId) {
+        console.error("Contact ID is missing, cannot get session key");
+        return;
+      }
+
+      const sessionResponse = await this.keapClient.getSessionKey(
+        this.state.keapContactId
+      );
+      console.log("Got new session key for payment retry:", sessionResponse);
+
+      // Set up payment element
+      await this.setupPaymentRetryForm(sessionResponse.session_key);
+    } catch (error) {
+      console.error("Failed to set up payment retry form:", error);
+    }
+  }
+
+  private async setupPaymentRetryForm(sessionKey: string): Promise<void> {
+    // Get the payment method element
+    const paymentMethod = document.querySelector("#keap-payment-method");
+
+    if (!paymentMethod) {
+      console.error("Payment method element not found in dialog");
+      return;
+    }
+
+    // Set session key attribute
+    paymentMethod.setAttribute("key", sessionKey);
+
+    // Load payment script if not already loaded
+    if (
+      !document.querySelector(
+        'script[src="https://payments.keap.page/lib/payment-method-embed.js"]'
+      )
+    ) {
+      const script = document.createElement("script");
+      script.src = "https://payments.keap.page/lib/payment-method-embed.js";
+      document.body.appendChild(script);
+    }
+
+    // Set up submit button
+    const submitButton = document.querySelector(
+      this.config.selectors.modalSubmitButton
+    );
+    if (submitButton) {
+      submitButton.addEventListener("click", () =>
+        this.handlePaymentRetrySubmit()
+      );
+    }
+
+    // Set up message handler
+    this.setupPaymentRetryMessageHandler();
+  }
+
+  private setupPaymentRetryMessageHandler(): void {
+    // Remove any existing handler
+    window.removeEventListener("message", this.handlePaymentMessage);
+
+    // Create new handler
+    this.handlePaymentMessage = async (event: MessageEvent) => {
+      const data = event.data;
+
+      // Check if this is a payment method message
+      if (!data || typeof data !== "object" || !("success" in data)) {
+        // Not a payment method message, ignore it
+        return;
+      }
+
+      console.log("Payment message received:", data);
+
+      // Clear timeout if it exists
+      if (this.paymentResponseTimeout) {
+        clearTimeout(this.paymentResponseTimeout);
+        this.paymentResponseTimeout = null;
+      }
+
+      // Disable submit button
+      const submitButton = document.querySelector(
+        this.config.selectors.modalSubmitButton
+      ) as HTMLButtonElement | null;
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = "Processing...";
+      }
+
+      if (!data.success) {
+        console.error("Payment method submission failed:", data);
+        // Re-enable submit button
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = "Click To Continue";
+        }
+        return;
+      }
+
+      // Remove message listener to prevent multiple submissions
+      window.removeEventListener("message", this.handlePaymentMessage);
+
+      try {
+        // Retry the payment with the new payment method ID
+        if (this.pendingProductId !== null) {
+          // Close the dialog
+          const dialog = document.querySelector(
+            this.config.selectors.modal
+          ) as HTMLDialogElement | null;
+          if (dialog) {
+            dialog.close();
+          }
+
+          // Process payment with new payment method ID
+          await this.processPaymentWithMethodId(
+            data.paymentMethodId,
+            this.pendingProductId
+          );
+        } else {
+          console.error("No pending product ID found for payment retry");
+        }
+      } catch (error) {
+        console.error("Payment retry failed:", error);
+        // Re-enable submit button
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = "Click To Continue";
+        }
+      }
+    };
+
+    // Add message listener
+    window.addEventListener("message", this.handlePaymentMessage);
+  }
+
+  private async handlePaymentRetrySubmit(): Promise<void> {
+    console.log("Submitting payment retry form");
+
+    // Disable submit button
+    const submitButton = document.querySelector(
+      this.config.selectors.modalSubmitButton
+    ) as HTMLButtonElement | null;
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = "Processing...";
+    }
+
+    // Get payment method element
+    const keapPaymentMethod = document.querySelector(
+      "#keap-payment-method"
+    ) as any;
+
+    if (!keapPaymentMethod || !keapPaymentMethod.submit) {
+      console.error("Payment method element not ready");
+      // Re-enable submit button
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = "Click To Continue";
+      }
+      return;
+    }
+
+    // Set timeout in case we don't get a response
+    this.paymentResponseTimeout = setTimeout(() => {
+      console.warn("No payment response received after 5 seconds");
+      // Re-enable submit button
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = "Click To Continue";
+      }
+    }, 5000);
+
+    // Submit payment method form
+    keapPaymentMethod.submit();
+    // The message handler will process the response
   }
 
   // UI Helper Methods
