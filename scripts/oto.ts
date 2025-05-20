@@ -842,6 +842,15 @@ class KeapOTOHandler {
             dialog.close();
           }
 
+          // Explicitly disable payment decline simulation for the retry attempt
+          if (window._simulatePaymentDeclineEnabled !== undefined) {
+            window._simulatePaymentDeclineEnabled = false;
+            console.log(
+              "%c⚠️ PAYMENT RETRY: Decline simulation disabled for retry attempt",
+              "color: orange; font-weight: bold"
+            );
+          }
+
           // Process payment with new payment method ID
           await this.processPaymentWithMethodId(
             data.paymentMethodId,
