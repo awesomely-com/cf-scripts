@@ -24,11 +24,54 @@ interface UpdateContactPayload {
 
 interface CreateOrderPayload {
   contact_id: string;
-  payment_method_id: string;
+  payment_method_id?: string;
   session_key: string;
   page_slug: string;
   product_ids: number[];
   affiliate_id?: string;
+}
+
+interface OrderResponse {
+  message?: string;
+  payment_status: "completed" | "failed" | "declined" | "error";
+  error?: string;
+  contact?: {
+    id: number;
+    email: string;
+    first_name?: string;
+    last_name?: string;
+    phone?: string;
+  };
+  order?: {
+    id: number;
+    status: string;
+    total_amount: number;
+  };
+  payment?: {
+    id: number;
+    amount: number;
+    status: string;
+    payment_method_id?: number;
+  };
+  page?: {
+    id: number;
+    name: string;
+    slug: string;
+  };
+  step?: {
+    id: number;
+    name: string;
+    next_step_url?: string;
+  };
+  products?: Array<{
+    id: number;
+    order_id: number;
+    product_id: number;
+    quantity: number;
+    price: number;
+  }>;
+  is_duplicate?: boolean;
+  next_step_url?: string;
 }
 
 export class KeapClient {
@@ -161,7 +204,7 @@ export class KeapClient {
   /**
    * Create and charge an order
    */
-  async createOrder(payload: CreateOrderPayload): Promise<any> {
+  async createOrder(payload: CreateOrderPayload): Promise<OrderResponse> {
     return this.makeRequest("/create-and-charge-order", "POST", payload);
   }
 
@@ -189,6 +232,17 @@ export class KeapClient {
   async getContactData(contactId: string): Promise<any> {
     console.log("Fetching contact data for ID:", contactId);
     return this.makeRequest(`/contacts/${contactId}`, "GET");
+  }
+
+  /**
+   * Get a session key for a contact ID
+   * Used to initiate or resume a payment session for a specific contact
+   */
+  async getSessionKey(contactId: string): Promise<{ session_key: string }> {
+    console.log("Getting session key for contact ID:", contactId);
+    return this.makeRequest("/get-session-key", "POST", {
+      contact_id: contactId,
+    });
   }
 }
 

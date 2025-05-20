@@ -567,7 +567,7 @@ class KeapOTOHandler {
           } else if (response.step && response.step.next_step_url) {
             setTimeout(() => {
               window.location.href =
-                response.step.next_step_url + sessionKeyParam;
+                (response.step?.next_step_url || "") + sessionKeyParam;
             }, 3000);
           }
           return;
