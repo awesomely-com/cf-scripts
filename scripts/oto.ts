@@ -5,6 +5,7 @@ import {
   getPageSlugFromUrl,
   deepMerge,
 } from "./utils";
+import KeapClient from "./keap-client";
 
 // Interface definitions
 interface Selectors {
@@ -46,6 +47,29 @@ interface OTOState {
   contactId: string | null;
 }
 
+interface APIResponse {
+  is_duplicate?: boolean;
+  step?: {
+    next_step_url?: string;
+    rejected_step_url?: string;
+    products?: any[];
+  };
+  order?: {
+    id?: number;
+    session_key?: string;
+    url_friendly_session_key?: string;
+  };
+  contact?: {
+    id?: number;
+    keap_contact_id?: number;
+  };
+  payment?: {
+    payment_method_id?: string;
+    keap_payment_method_id?: string;
+  };
+  next_step_url?: string;
+}
+
 declare global {
   interface Window {
     KeapOTOConfig?: Partial<KeapOTOConfig>;
@@ -56,6 +80,7 @@ class KeapOTOHandler {
   private config: KeapOTOConfig;
   private state: OTOState;
   private initialized: boolean = false;
+  private keapClient: KeapClient;
 
   // Default configuration
   static defaultConfig = {
@@ -90,6 +115,7 @@ class KeapOTOHandler {
       secondaryProductId: null,
       contactId: null,
     };
+    this.keapClient = new KeapClient();
   }
 
   init(): void {
@@ -216,80 +242,79 @@ class KeapOTOHandler {
 
   private async fetchPageData(pageSlug: string): Promise<void> {
     try {
-      const response = await fetch(
-        `https://funnels-api.awesomely.com/api/keap/start-payments-api-session`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            page_slug: pageSlug,
-            session_key: this.state.sessionKey,
-          }),
-        }
-      );
+      // Create payload for starting payments API session
+      const payload = {
+        page_slug: pageSlug,
+        session_key: this.state.sessionKey || "",
+        tracking_data: {},
+      };
 
-      if (!response.ok) {
-        if (response.status === 400) {
-          const errorData = await response.json();
-          if (errorData.message === "Session has expired") {
-            console.log("Received expired session error from API");
-            this.deleteExpiredSessionData();
+      // Use KeapClient to start the payments API session
+      try {
+        const response = await this.keapClient.makeRequest<APIResponse>(
+          "/start-payments-api-session",
+          "POST",
+          payload
+        );
+
+        console.log("API Response:", response);
+
+        // Handle duplicate order case
+        if (response.is_duplicate === true) {
+          console.warn("Duplicate order detected");
+
+          // Redirect to next step if available
+          if (response.step && response.step.next_step_url) {
+            const nextUrl = response.step.next_step_url;
+            const sessionKeyParam =
+              response.order?.url_friendly_session_key ||
+              this.state.sessionKey ||
+              "";
+
+            setTimeout(() => {
+              window.location.href = `${nextUrl}?session_key=${sessionKeyParam}`;
+            }, 3000);
           }
-          throw new Error("Network response was not ok: " + errorData.message);
+          return;
         }
-        throw new Error("Network response was not ok: " + response.statusText);
-      }
 
-      const data = await response.json();
-      console.log("API Response:", data);
-
-      // Handle duplicate order case
-      if (data.is_duplicate === true) {
-        console.warn("Duplicate order detected");
-
-        // Redirect to next step if available
-        if (data.step && data.step.next_step_url) {
-          setTimeout(() => {
-            window.location.href =
-              data.step.next_step_url +
-              "?session_key=" +
-              (data.order?.url_friendly_session_key ||
-                this.state.sessionKey ||
-                "");
-          }, 3000);
+        // Store relevant data in state
+        this.updateState(response);
+      } catch (error: any) {
+        // Handle session expiration and other API errors
+        if (error.status === 400 && error.message === "Session has expired") {
+          console.log("Received expired session error from API");
+          this.deleteExpiredSessionData();
         }
-        return;
+        throw error; // Re-throw to be caught by outer catch
       }
-
-      // Store relevant data in state
-      this.updateState(data);
     } catch (error) {
       console.error("API request failed:", error);
     }
   }
 
-  private updateState(data: any): void {
+  private updateState(data: APIResponse): void {
     // Update state with data from API response
     if (data.contact && data.contact.id) {
       this.state.keapContactId = data.contact.id.toString();
     }
 
     if (data.order) {
-      this.state.orderId = data.order.id.toString();
-      this.state.sessionKey = data.order.session_key;
-      this.state.urlFriendlySessionKey = data.order.url_friendly_session_key;
+      this.state.orderId = data.order.id?.toString() || null;
+      this.state.sessionKey = data.order.session_key || null;
+      this.state.urlFriendlySessionKey =
+        data.order.url_friendly_session_key || null;
     }
 
     if (data.step) {
-      this.state.acceptUrl = data.step.next_step_url;
-      this.state.rejectUrl = data.step.rejected_step_url;
+      this.state.acceptUrl = data.step.next_step_url || null;
+      this.state.rejectUrl = data.step.rejected_step_url || null;
     }
 
     // Check if we have a payment method ID from a previous payment
     if (data.payment && data.payment.payment_method_id) {
-      this.state.existingPaymentMethodId = data.payment.keap_payment_method_id;
+      this.state.existingPaymentMethodId =
+        data.payment.keap_payment_method_id || null;
       console.log(
         "Found existing payment method ID:",
         this.state.existingPaymentMethodId
@@ -505,7 +530,7 @@ class KeapOTOHandler {
     // Get the affiliate ID if present in the URL
     const affiliateId = getUrlParameter("affiliate");
 
-    // Send API request to create and charge order
+    // Create payload for the order
     const payload: any = {
       contact_id: this.state.keapContactId,
       payment_method_id: paymentMethodId,
@@ -520,77 +545,67 @@ class KeapOTOHandler {
     }
 
     try {
-      const response = await fetch(
-        "https://funnels-api.awesomely.com/api/keap/create-and-charge-order",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      // Use KeapClient to create and charge the order
+      try {
+        const response = await this.keapClient.createOrder(payload);
+        console.log("Order created:", response);
 
-      if (!response.ok) {
-        if (response.status === 400) {
-          const errorData = await response.json();
-          if (errorData.message === "Session expired") {
+        // Create a session key parameter string to reuse
+        const sessionKeyParam = `?session_key=${
+          this.state.urlFriendlySessionKey || ""
+        }`;
+
+        // Handle duplicate order
+        if (response.is_duplicate === true) {
+          console.warn("Duplicate order detected");
+
+          // Redirect to next step
+          if (response.next_step_url) {
+            setTimeout(() => {
+              window.location.href = response.next_step_url + sessionKeyParam;
+            }, 3000);
+          } else if (response.step && response.step.next_step_url) {
+            setTimeout(() => {
+              window.location.href =
+                response.step.next_step_url + sessionKeyParam;
+            }, 3000);
+          }
+          return;
+        }
+
+        // Find the next step URL
+        let nextStepUrl: string | null = null;
+
+        // First check direct next_step_url
+        if (response.next_step_url) {
+          nextStepUrl = response.next_step_url;
+        }
+        // Then check if there's a step object with next_step_url
+        else if (response.step && response.step.next_step_url) {
+          nextStepUrl = response.step.next_step_url;
+        }
+        // Fallback to acceptUrl from earlier API call
+        else if (this.state.acceptUrl) {
+          nextStepUrl = this.state.acceptUrl;
+        }
+
+        // Redirect after a short delay
+        if (nextStepUrl) {
+          setTimeout(() => {
+            window.location.href = nextStepUrl + sessionKeyParam;
+          }, 3000);
+        } else {
+          console.warn("No next step URL found");
+        }
+      } catch (error: any) {
+        // Handle session expiration and other API errors
+        if (error.status === 400) {
+          if (error.message === "Session expired") {
             console.log("Session expired during payment process");
             this.deleteExpiredSessionData();
           }
-          throw new Error("Network response was not ok: " + errorData.message);
         }
-        throw new Error("Network response was not ok: " + response.statusText);
-      }
-
-      const data = await response.json();
-      console.log("Order created:", data);
-
-      // Create a session key parameter string to reuse
-      const sessionKeyParam = `?session_key=${
-        this.state.urlFriendlySessionKey || ""
-      }`;
-
-      // Handle duplicate order
-      if (data.is_duplicate === true) {
-        console.warn("Duplicate order detected");
-
-        // Redirect to next step
-        if (data.next_step_url) {
-          setTimeout(() => {
-            window.location.href = data.next_step_url + sessionKeyParam;
-          }, 3000);
-        } else if (data.step && data.step.next_step_url) {
-          setTimeout(() => {
-            window.location.href = data.step.next_step_url + sessionKeyParam;
-          }, 3000);
-        }
-        return;
-      }
-
-      // Find the next step URL
-      let nextStepUrl: string | null = null;
-
-      // First check direct next_step_url
-      if (data.next_step_url) {
-        nextStepUrl = data.next_step_url;
-      }
-      // Then check if there's a step object with next_step_url
-      else if (data.step && data.step.next_step_url) {
-        nextStepUrl = data.step.next_step_url;
-      }
-      // Fallback to acceptUrl from earlier API call
-      else if (this.state.acceptUrl) {
-        nextStepUrl = this.state.acceptUrl;
-      }
-
-      // Redirect after a short delay
-      if (nextStepUrl) {
-        setTimeout(() => {
-          window.location.href = nextStepUrl + sessionKeyParam;
-        }, 3000);
-      } else {
-        console.warn("No next step URL found");
+        throw error; // Re-throw to be caught by outer catch
       }
     } catch (error) {
       console.error("API request failed:", error);
