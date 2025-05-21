@@ -536,6 +536,10 @@ class KeapOTOHandler {
 
     // If we already have a payment method from a previous order, use it directly
     if (this.state.existingPaymentMethodId) {
+      // if simulatePaymentDecline is enabled, set the status to declined
+      if (window._simulatePaymentDeclineEnabled) {
+        console.log("SIMULATING PAYMENT DECLINE (testing mode)");
+      }
       console.log(
         "Using existing payment method ID:",
         this.state.existingPaymentMethodId
