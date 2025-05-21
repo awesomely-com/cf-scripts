@@ -79,6 +79,27 @@ export class KeapClient {
   private baseUrl = "https://funnels-api.awesomely.com/api/keap";
 
   /**
+   * Get tracking data including URL parameters and localStorage data
+   */
+  private getTrackingData(): Record<string, string> {
+    // Start with URL parameters
+    const trackingData = queryStringToJSON();
+
+    // Check for LandingPagePath in localStorage
+    try {
+      const landingPagePath = localStorage.getItem("LandingPagePath");
+      if (landingPagePath) {
+        console.log("Found LandingPagePath in localStorage:", landingPagePath);
+        trackingData.landing_page_path = landingPagePath;
+      }
+    } catch (e) {
+      console.warn("Error accessing localStorage:", e);
+    }
+
+    return trackingData;
+  }
+
+  /**
    * Make a request to the Keap API
    */
   async makeRequest<T>(
@@ -162,7 +183,7 @@ export class KeapClient {
       page_slug: getPageSlugFromUrl(),
       opt_in: true,
       opt_in_reason: "Opted in via order form",
-      tracking_data: queryStringToJSON(),
+      tracking_data: this.getTrackingData(),
       sales_awesomely_external_key: salesAwesomelyExternalKey,
     };
 
@@ -219,7 +240,7 @@ export class KeapClient {
       page_slug: pageSlug,
       opt_in: true,
       opt_in_reason: "Opted in via order form",
-      tracking_data: queryStringToJSON(),
+      tracking_data: this.getTrackingData(),
     };
 
     console.log("Starting simple session with payload:", payload);
