@@ -260,10 +260,12 @@ export class KeapClient {
    * Get a session key for a contact ID
    * Used to initiate or resume a payment session for a specific contact
    */
-  async getSessionKey(contactId: string): Promise<{ session_key: string }> {
-    console.log("Getting session key for contact ID:", contactId);
+  async getSessionKey(
+    keapContactId: string | number
+  ): Promise<{ session_key: string }> {
+    console.log("Getting session key for contact ID:", keapContactId);
     return this.makeRequest("/get-session-key", "POST", {
-      contact_id: contactId,
+      contact_id: keapContactId,
     });
   }
 }

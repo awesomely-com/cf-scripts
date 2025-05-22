@@ -349,7 +349,7 @@ class KeapOTOHandler {
   private updateState(data: OrderResponse): void {
     // Update state with data from API response
     if (data.contact && data.contact.id) {
-      this.state.keapContactId = data.contact.id.toString();
+      this.state.keapContactId = data.contact.keap_contact_id?.toString() || "";
     }
 
     if (data.order) {
@@ -722,7 +722,9 @@ class KeapOTOHandler {
       // Create dialog content based on test-modal.html
       dialog.innerHTML = `
         <h2>Your credit card was declined, please update your card.</h2>
-        <keap-payment-method id="keap-payment-method"></keap-payment-method>
+        <div id="keap-payment-method-container">
+          <keap-payment-method id="keap-payment-method" />
+        </div>
         <button id="${this.config.selectors.modalSubmitButton.substring(
           1
         )}" class="elButton">Click To Continue</button>
