@@ -105,6 +105,11 @@ declare global {
     KeapOTOConfig?: Partial<KeapOTOConfig>;
     simulatePaymentDecline?: (enable: boolean) => void;
     _simulatePaymentDeclineEnabled?: boolean;
+    simulateRetryPayment?: (shouldSucceedOrDisable: boolean | null) => void;
+    _simulateRetryPaymentConfig?: {
+      enabled: boolean;
+      shouldSucceed: boolean;
+    };
   }
 }
 
@@ -167,6 +172,43 @@ class KeapOTOHandler {
           "The next payment attempt will " +
             (enable ? "simulate a decline" : "process normally")
         );
+      };
+
+      // Add a global utility function to simulate payment retry flow
+      window.simulateRetryPayment = (
+        shouldSucceedOrDisable: boolean | null = true
+      ) => {
+        // Check if we're disabling the simulation
+        if (shouldSucceedOrDisable === null) {
+          window._simulateRetryPaymentConfig = undefined;
+          console.log(
+            "%c🔧 TESTING: Retry payment simulation DISABLED",
+            "color: gray; font-weight: bold"
+          );
+          return;
+        }
+
+        // Enable simulation with the specified success state
+        window._simulateRetryPaymentConfig = {
+          enabled: true,
+          shouldSucceed: shouldSucceedOrDisable,
+        };
+        console.log(
+          `%c🔧 TESTING: Retry payment simulation ENABLED (will ${
+            shouldSucceedOrDisable ? "SUCCEED" : "FAIL"
+          } after 3 seconds)`,
+          "color: purple; font-weight: bold"
+        );
+        console.log(
+          "Use this to test the payment retry flow without actually processing a payment"
+        );
+        console.log(
+          "To test: Click any payment button, then submit the payment form in the retry modal"
+        );
+        console.log("To disable simulation: simulateRetryPayment(null)");
+
+        // Immediately show the retry modal to start testing
+        this.showPaymentRetryModal();
       };
     }
   }
@@ -894,22 +936,41 @@ class KeapOTOHandler {
         this.paymentResponseTimeout = null;
       }
 
-      // Disable submit button
+      // Disable submit button in modal
       const submitButton = document.querySelector(
         this.config.selectors.modalSubmitButton
       ) as HTMLButtonElement | null;
       if (submitButton) {
         submitButton.disabled = true;
         submitButton.textContent = "Processing...";
+        submitButton.style.cursor = "not-allowed";
+        submitButton.style.opacity = "0.7";
+      }
+
+      // Also disable all accept buttons on the page
+      this.disableAllAcceptButtons();
+
+      // Get dialog reference and save original heading text
+      const dialog = document.querySelector(
+        this.config.selectors.modal
+      ) as HTMLDialogElement | null;
+
+      let originalHeadingText =
+        "Your credit card was declined, please update your card.";
+      const h2 = dialog?.querySelector("h2");
+      if (h2) {
+        // Save original heading text
+        originalHeadingText = h2.textContent || originalHeadingText;
       }
 
       if (!data.success) {
         console.error("Payment method submission failed:", data);
-        // Re-enable submit button
-        if (submitButton) {
-          submitButton.disabled = false;
-          submitButton.textContent = "Click To Continue";
-        }
+
+        // Restore original modal state
+        this.restoreModalState(dialog, originalHeadingText, submitButton);
+
+        // Re-enable accept buttons on the page
+        this.enableAllAcceptButtons();
         return;
       }
 
@@ -919,38 +980,60 @@ class KeapOTOHandler {
       try {
         // Retry the payment with the new payment method ID
         if (this.pendingProductId !== null) {
-          // Close the dialog
-          const dialog = document.querySelector(
-            this.config.selectors.modal
-          ) as HTMLDialogElement | null;
-          if (dialog) {
-            dialog.close();
+          // Update the modal to show processing state
+          if (h2) {
+            h2.textContent = "Processing your payment...";
           }
 
-          // Explicitly disable payment decline simulation for the retry attempt
-          if (window._simulatePaymentDeclineEnabled !== undefined) {
-            window._simulatePaymentDeclineEnabled = false;
-            console.log(
-              "%c⚠️ PAYMENT RETRY: Decline simulation disabled for retry attempt",
-              "color: orange; font-weight: bold"
-            );
+          // Disable the payment form container
+          const paymentContainer = dialog?.querySelector(
+            "#keap-payment-method-container"
+          );
+          if (paymentContainer instanceof HTMLElement) {
+            paymentContainer.style.opacity = "0.5";
+            paymentContainer.style.pointerEvents = "none";
           }
+
+          // Disable all simulations
+          window._simulatePaymentDeclineEnabled = false;
+          if (typeof window._simulateRetryPaymentConfig !== "undefined") {
+            window._simulateRetryPaymentConfig = undefined;
+          }
+
+          console.log(
+            "%c⚠️ PAYMENT RETRY: All simulations disabled for retry attempt",
+            "color: orange; font-weight: bold"
+          );
 
           // Process payment with new payment method ID
+          // NOTE: We don't close the modal anymore
+          // The page will naturally redirect on successful payment
           await this.processPaymentWithMethodId(
             data.paymentMethodId,
             this.pendingProductId
           );
+
+          // Add a message to indicate waiting for redirect
+          if (h2) {
+            h2.textContent = "Payment successful!";
+          }
         } else {
           console.error("No pending product ID found for payment retry");
+
+          // Restore original modal state
+          this.restoreModalState(dialog, originalHeadingText, submitButton);
+
+          // Re-enable buttons since we're not processing
+          this.enableAllAcceptButtons();
         }
       } catch (error) {
         console.error("Payment retry failed:", error);
-        // Re-enable submit button
-        if (submitButton) {
-          submitButton.disabled = false;
-          submitButton.textContent = "Click To Continue";
-        }
+
+        // Restore original modal state
+        this.restoreModalState(dialog, originalHeadingText, submitButton);
+
+        // Re-enable accept buttons on the page
+        this.enableAllAcceptButtons();
       }
     };
 
@@ -961,13 +1044,91 @@ class KeapOTOHandler {
   private async handlePaymentRetrySubmit(): Promise<void> {
     console.log("Submitting payment retry form");
 
-    // Disable submit button
+    // Disable submit button with visual feedback
     const submitButton = document.querySelector(
       this.config.selectors.modalSubmitButton
     ) as HTMLButtonElement | null;
     if (submitButton) {
       submitButton.disabled = true;
       submitButton.textContent = "Processing...";
+      submitButton.style.cursor = "not-allowed";
+      submitButton.style.opacity = "0.7";
+    }
+
+    // Disable all accept buttons on the page with visual styling
+    this.disableAllAcceptButtons();
+
+    // Get dialog reference and save original heading text
+    const dialog = document.querySelector(
+      this.config.selectors.modal
+    ) as HTMLDialogElement | null;
+
+    let originalHeadingText =
+      "Your credit card was declined, please update your card.";
+    const h2 = dialog?.querySelector("h2");
+    if (h2) {
+      // Save original heading text
+      originalHeadingText = h2.textContent || originalHeadingText;
+      // Update heading to processing
+      h2.textContent = "Processing your payment...";
+    }
+
+    // Check if we're in simulation mode
+    if (window._simulateRetryPaymentConfig?.enabled) {
+      console.log(
+        "%c🔧 TESTING: Simulating payment retry submission...",
+        "color: purple"
+      );
+
+      // We don't need to submit the real payment form in simulation mode
+      // Instead, we'll simulate the response after a delay
+
+      setTimeout(() => {
+        const shouldSucceed =
+          window._simulateRetryPaymentConfig?.shouldSucceed || false;
+
+        if (shouldSucceed) {
+          console.log(
+            "%c🔧 TESTING: Simulating SUCCESSFUL payment retry",
+            "color: green"
+          );
+
+          // Close the modal on success
+          if (dialog) {
+            dialog.close();
+          }
+
+          // Reset the simulation flag
+          window._simulateRetryPaymentConfig = undefined;
+
+          // Show success message
+          console.log(
+            "%c✅ TESTING: Payment retry successful! In real usage, the user would be redirected to the next step.",
+            "color: green; font-weight: bold"
+          );
+
+          // Re-enable all buttons
+          this.enableAllAcceptButtons();
+        } else {
+          console.log(
+            "%c🔧 TESTING: Simulating FAILED payment retry",
+            "color: red"
+          );
+
+          // Restore modal state
+          this.restoreModalState(dialog, originalHeadingText, submitButton);
+
+          // Re-enable all buttons
+          this.enableAllAcceptButtons();
+
+          console.log(
+            "%c❌ TESTING: Payment retry failed! The modal has been reset to try again.",
+            "color: red; font-weight: bold"
+          );
+        }
+      }, 3000);
+
+      return;
     }
 
     // Get payment method element
@@ -977,22 +1138,20 @@ class KeapOTOHandler {
 
     if (!keapPaymentMethod || !keapPaymentMethod.submit) {
       console.error("Payment method element not ready");
-      // Re-enable submit button
-      if (submitButton) {
-        submitButton.disabled = false;
-        submitButton.textContent = "Click To Continue";
-      }
+      // Restore modal state
+      this.restoreModalState(dialog, originalHeadingText, submitButton);
+      // Re-enable buttons
+      this.enableAllAcceptButtons();
       return;
     }
 
     // Set timeout in case we don't get a response
     this.paymentResponseTimeout = setTimeout(() => {
       console.warn("No payment response received after 5 seconds");
-      // Re-enable submit button
-      if (submitButton) {
-        submitButton.disabled = false;
-        submitButton.textContent = "Click To Continue";
-      }
+      // Restore modal state
+      this.restoreModalState(dialog, originalHeadingText, submitButton);
+      // Re-enable buttons
+      this.enableAllAcceptButtons();
     }, 5000);
 
     // Submit payment method form
@@ -1026,6 +1185,87 @@ class KeapOTOHandler {
 
     // Add a class so we can identify it as disabled
     buttonLink.classList.add("disabled");
+  }
+
+  // Disable all accept buttons on the page
+  private disableAllAcceptButtons(): void {
+    // Get all accept buttons
+    const acceptButtonSelectors = [
+      this.config.selectors.acceptButton,
+      this.config.selectors.acceptButton2,
+      this.config.selectors.acceptButtonProduct2,
+    ];
+
+    acceptButtonSelectors.forEach((selector) => {
+      const button = document.getElementById(selector);
+      if (button) {
+        const buttonLink = button.querySelector("a");
+        if (buttonLink instanceof HTMLElement) {
+          this.disableButton(button, buttonLink);
+        }
+      }
+    });
+  }
+
+  // Enable all accept buttons on the page
+  private enableAllAcceptButtons(): void {
+    // Get all accept buttons
+    const acceptButtonSelectors = [
+      this.config.selectors.acceptButton,
+      this.config.selectors.acceptButton2,
+      this.config.selectors.acceptButtonProduct2,
+    ];
+
+    acceptButtonSelectors.forEach((selector) => {
+      const button = document.getElementById(selector);
+      if (button) {
+        const buttonLink = button.querySelector("a");
+        if (buttonLink instanceof HTMLElement) {
+          // Remove disabled state
+          button.style.pointerEvents = "";
+          buttonLink.style.pointerEvents = "";
+          buttonLink.style.opacity = "";
+          buttonLink.style.cursor = "";
+          buttonLink.classList.remove("disabled");
+
+          // Restore original background if saved
+          if (buttonLink.dataset.originalBgColor) {
+            buttonLink.style.background = buttonLink.dataset.originalBgColor;
+          } else {
+            buttonLink.style.background = "";
+          }
+
+          // Restore original text if saved
+          const buttonTextSpan = buttonLink.querySelector(".elButtonMain");
+          if (buttonTextSpan instanceof HTMLElement) {
+            if (buttonLink.dataset.originalText) {
+              buttonTextSpan.textContent = buttonLink.dataset.originalText;
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // Helper method to restore modal UI state
+  private restoreModalState(
+    dialog: HTMLDialogElement | null,
+    originalHeadingText: string,
+    submitButton: HTMLButtonElement | null
+  ): void {
+    // Restore heading
+    if (dialog) {
+      const h2 = dialog.querySelector("h2");
+      if (h2) {
+        h2.textContent = originalHeadingText;
+      }
+    }
+
+    // Re-enable submit button
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.textContent = "Click To Continue";
+    }
   }
 }
 
