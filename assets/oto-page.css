@@ -3,23 +3,41 @@
   border-radius: 0.5rem;
   width: clamp(300px, 90%, 400px);
   padding: 2rem;
+  overflow: visible;
 }
 
 #oto-decline-modal h2 {
   text-align: center;
-  font-size: 1.5rem;
+  font-size: 1.65rem;
+  font-weight: 600;
   margin-bottom: 1rem;
   margin-top: 0;
+  margin-bottom: 1rem;
   font-family: sans-serif;
+  text-wrap: balance;
 }
 
 #oto-decline-modal button {
-  margin-top: 1rem;
   color: white;
   border: none;
-  font-size: 1.35rem;
+  font-size: 20px;
   outline: none;
   border-radius: 0.25rem;
+  width: 100%;
+  margin-top: -20px;
+  position: relative;
+  background-image: linear-gradient(
+    to top right,
+    var(--primary-cta-color, #fd481b) 0%,
+    var(--secondary-cta-color, #ffc837) 100%
+  ) !important;
+  box-shadow: 0 0 5px #ccc, 1px 5px 5px #ccc;
+}
+
+#oto-decline-modal button {
+  background-position: right center !important;
+  cursor: pointer;
+  box-shadow: 0 0 5px #bbb, 1px 5px 5px #bbb;
 }
 
 #oto-decline-modal:focus-visible {
@@ -36,23 +54,4 @@
   display: block;
   left: -16px;
   position: relative;
-}
-
-#retry-payment-submit {
-  font-size: 20px;
-  width: 100%;
-  margin-top: -20px;
-  position: relative;
-  background-image: linear-gradient(
-    to top right,
-    var(--primary-cta-color, #fd481b) 0%,
-    var(--secondary-cta-color, #ffc837) 100%
-  ) !important;
-  box-shadow: 0 0 5px #ccc, 1px 5px 5px #ccc;
-}
-
-#retry-payment-submit:hover {
-  background-position: right center !important;
-  cursor: pointer;
-  box-shadow: 0 0 5px #bbb, 1px 5px 5px #bbb;
 }

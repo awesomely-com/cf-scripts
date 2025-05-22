@@ -719,8 +719,9 @@ class KeapOTOHandler {
       dialog = document.createElement("dialog");
       dialog.id = this.config.selectors.modal.substring(1); // Remove # from id
 
-      // Create dialog content based on test-modal.html
+      // Create dialog content based on test-modal.html, including the close button
       dialog.innerHTML = `
+        <div class="closeLPModal"><img src="https://www.clickfunnels.com/images/closemodal.png" alt=""></div>
         <h2>Your credit card was declined, please update your card.</h2>
         <div id="keap-payment-method-container">
           <keap-payment-method id="keap-payment-method" />
@@ -732,10 +733,21 @@ class KeapOTOHandler {
 
       // No need to add styles as they are in assets/oto-page.css
       document.body.appendChild(dialog);
+
+      // Add event listener to close button
+      const closeButton = dialog.querySelector(".closeLPModal");
+      if (closeButton) {
+        closeButton.addEventListener("click", () => {
+          dialog?.close();
+        });
+      }
     }
 
     // Display the dialog
     dialog.showModal();
+
+    // Update button event handlers to open the modal instead
+    this.updateButtonHandlersForRetry();
 
     try {
       // Get a new session key for the payment form
@@ -754,6 +766,73 @@ class KeapOTOHandler {
     } catch (error) {
       console.error("Failed to set up payment retry form:", error);
     }
+  }
+
+  // New method to update button handlers after payment decline
+  private updateButtonHandlersForRetry(): void {
+    console.log("Updating button handlers for payment retry");
+
+    // Update primary accept button
+    this.updateSingleButtonHandler(this.config.selectors.acceptButton);
+
+    // Update secondary accept button
+    this.updateSingleButtonHandler(this.config.selectors.acceptButton2);
+
+    // Update product2 accept button
+    this.updateSingleButtonHandler(this.config.selectors.acceptButtonProduct2);
+  }
+
+  // Helper method to update a single button handler
+  private updateSingleButtonHandler(buttonSelector: string): void {
+    const button = document.getElementById(buttonSelector);
+    if (!button) return;
+
+    // Find the button link
+    const buttonLink = button.querySelector("a");
+    if (!buttonLink || !(buttonLink instanceof HTMLElement)) return;
+
+    // Remove disabled state if it exists
+    button.style.pointerEvents = "";
+    buttonLink.style.pointerEvents = "";
+    buttonLink.style.opacity = "";
+    buttonLink.style.cursor = "";
+    buttonLink.classList.remove("disabled");
+
+    // Restore original background if saved
+    if (buttonLink.dataset.originalBgColor) {
+      buttonLink.style.background = buttonLink.dataset.originalBgColor;
+    } else {
+      buttonLink.style.background = "";
+    }
+
+    // Restore original text if saved
+    const buttonTextSpan = buttonLink.querySelector(".elButtonMain");
+    if (buttonTextSpan instanceof HTMLElement) {
+      if (buttonLink.dataset.originalText) {
+        buttonTextSpan.textContent = buttonLink.dataset.originalText;
+      }
+    }
+
+    // Remove all existing click event listeners by cloning and replacing
+    const newButtonLink = buttonLink.cloneNode(true) as HTMLElement;
+    buttonLink.parentNode?.replaceChild(newButtonLink, buttonLink);
+
+    // Add new event listener to show the modal
+    newButtonLink.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      // Show the retry modal
+      const dialog = document.querySelector(
+        this.config.selectors.modal
+      ) as HTMLDialogElement | null;
+
+      if (dialog) {
+        dialog.showModal();
+      } else {
+        // If the modal doesn't exist yet, create it
+        this.showPaymentRetryModal();
+      }
+    });
   }
 
   private async setupPaymentRetryForm(sessionKey: string): Promise<void> {
