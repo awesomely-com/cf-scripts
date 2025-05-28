@@ -42,6 +42,11 @@ document.addEventListener("DOMContentLoaded", () => {
         params.sl = window.slForUrls;
     }
 
+    // If lpp is not set, set it to the current page URL
+    if (!params.lpp) {
+        params.lpp = window.location.pathname.substring(1);
+    }
+
     function buildQueryString(): string {
         const queryParams = new URLSearchParams();
         for (const key in params) {
