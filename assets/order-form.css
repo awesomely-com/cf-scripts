@@ -413,7 +413,7 @@ html:not([data-is-editing]) .hidden-until-session-start {
 }
 
 /* Handle elements that should be shown after session start */
-html:not([data-is-editing]).shown-after-session-start {
+html:not([data-is-editing]) .shown-after-session-start {
   display: block !important;
 }
 
@@ -427,4 +427,40 @@ html:not([data-is-editing]).shown-after-session-start {
     margin-left: 6px;
     margin-right: 6px;
   }
+}
+
+/* Hide elements by default until session starts */
+html:not[data-session-started] #headline-93357,
+html:not[data-session-started] #tmp_image-96949,
+html:not[data-session-started] #tmp_orb-35379,
+html:not[data-session-started] #tmp_ors-61891,
+html:not[data-session-started] #tmp_customjs-87590,
+html:not[data-session-started] #tmp_button-78442,
+html:not[data-session-started] #tmp_button-23692,
+html:not[data-session-started] #img-11614,
+html:not[data-session-started] #headline-20568,
+html:not[data-session-started] #headline-73264,
+html:not[data-session-started] #divider-52675,
+html:not[data-session-started] #headline-14916,
+html:not[data-session-started] #tmp_list-19785,
+html:not[data-session-started] #divider-29299,
+html:not[data-session-started] #featureimage-36985,
+html:not[data-session-started] #divider-24577,
+html:not[data-session-started] #headline-34383,
+html:not[data-session-started] #headline-50095,
+html:not[data-session-started] #img-18358,
+html:not[data-session-started] #divider-22814,
+html:not[data-session-started] #headline-32402,
+html:not[data-session-started] #img-16995,
+html:not[data-session-started] #headline-98782,
+html:not[data-session-started] #container-57373 {
+  display: none !important;
+}
+
+/* Hide these after session starts */
+html[data-session-started] #tmp_button-35872,
+html[data-session-started] #tmp_paragraph-92045,
+html[data-session-started] #tmp_image-77093,
+html[data-session-started] #row--24192 {
+  display: none !important;
 }

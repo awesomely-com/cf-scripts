@@ -218,6 +218,9 @@ class KeapFunnelHandler {
       },
       elementsToHideAfterSessionStart: [
         "#tmp_button-35872", // Submit button
+        "#tmp_paragraph-92045", // Terms of Use & Privacy Policy links
+        "#tmp_image-77093", // security graphics
+        "#row--24192", // footer
       ],
       elementsToDisable: [
         "#tmp_input-36893", // First Name input
@@ -235,6 +238,21 @@ class KeapFunnelHandler {
         "#tmp_button-23692", // Order button
         "#img-11614", // secure checkout image
         "#headline-20568", // disclaimer headline
+        "#headline-73264", // "Yours Today: $$$" - price
+        "#divider-52675", // divider under main graphic and descriptor
+        "#headline-14916", // "Here's What You're About to Receive"
+        "#tmp_list-19785", // list of items
+        "#divider-29299", // divider under list of items
+        "#featureimage-36985", // money back guarantee
+        "#divider-24577", // divider under money back guarantee
+        "#headline-34383", // "Your Order is Safe and Secure"
+        "#headline-50095", // safe and secure description
+        "#img-18358", // security graphics
+        "#divider-22814", // divider under security graphics
+        "#headline-32402", // "We Create Awesome Experiences" - review heading
+        "#img-16995", // reviews star graphics
+        "#headline-98782", // "Our main goal..."
+        "#container-57373", // testimonials section
       ],
     },
     sessionConfig: {
@@ -634,6 +652,9 @@ class KeapFunnelHandler {
       console.warn("No products found in response");
     }
 
+    // Add data attribute to html element to indicate session has started
+    document.documentElement.setAttribute("data-session-started", "true");
+
     this.showElementsAfterSessionStart();
     this.setupPaymentMethod();
     this.disableFormElements();
@@ -860,7 +881,9 @@ class KeapFunnelHandler {
 
     // Only fall back to form-based approach if we're supporting legacy flow
     // This is no longer the primary path - we prefer contact ID
-    console.log("No contact ID found, legacy form-based approach not needed");
+    console.log(
+      "No contact ID found, staying on step-1 for contact information entry"
+    );
   }
 
   handleDuplicateOrder(response: any): void {
