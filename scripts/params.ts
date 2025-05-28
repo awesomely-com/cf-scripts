@@ -44,7 +44,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // If lpp is not set, set it to the current page URL
     if (!params.lpp) {
-        params.lpp = window.location.pathname.substring(1);
+        // First check local storage for the "LandingPagePath" key
+        const landingPagePath = localStorage.getItem("LandingPagePath");
+        if (landingPagePath) {
+            params.lpp = landingPagePath;
+        } else {
+            params.lpp = window.location.pathname.substring(1);
+        }
     }
 
     function buildQueryString(): string {
