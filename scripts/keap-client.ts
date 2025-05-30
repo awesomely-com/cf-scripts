@@ -76,18 +76,18 @@ export class KeapClient {
       body: data ? JSON.stringify(data) : undefined,
     });
 
-    if (!response.ok) {
-      console.warn(`API request failed with status ${response.status}`);
-      if (response.status === 400) {
-        const errorData = await response.json();
-        console.error("API error details:", errorData);
-        if (errorData.message === "Session has expired") {
-          // Session expired
-          console.log("Session has expired");
-        }
-      }
-      throw new Error(`API request failed: ${response.statusText}`);
-    }
+    // if (!response.ok) {
+    //   console.warn(`API request failed with status ${response.status}`);
+    //   if (response.status === 400) {
+    //     const errorData = await response.json();
+    //     console.error("API error details:", errorData);
+    //     if (errorData.message === "Session has expired") {
+    //       // Session expired
+    //       console.log("Session has expired");
+    //     }
+    //   }
+    //   throw new Error(`API request failed: ${response.statusText}`);
+    // }
 
     const responseData = await response.json();
     console.log(`API Response from ${endpoint}:`, responseData);
@@ -114,7 +114,11 @@ export class KeapClient {
    * Start a new payment session
    */
   async startSession(payload: SessionPayload): Promise<any> {
-    return this.makeRequest("/start-payments-api-session", "POST", payload);
+    return this.makeRequest(
+      "/start-payments-api-session?phone_optional=true",
+      "POST",
+      payload
+    );
   }
 
   /**
@@ -125,7 +129,7 @@ export class KeapClient {
       firstName: string;
       lastName: string;
       email: string;
-      phone: string;
+      phone?: string;
     },
     sessionKey?: string,
     salesAwesomelyExternalKey?: any,
