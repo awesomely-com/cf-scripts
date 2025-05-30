@@ -13,6 +13,8 @@ function appendQueryParamsToUrl(baseUrl: string): string {
 		newUrl.searchParams.append(key, value);
 	});
 
+	newUrl.searchParams.append("lpp", window.location.pathname.substring(1));
+
 	// Return the new URL as a string
 	return newUrl.toString();
 }
