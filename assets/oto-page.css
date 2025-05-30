@@ -1,32 +1,57 @@
 #oto-decline-modal {
-	border: none;
-	border-radius: 0.5rem;
-	width: clamp(300px, 90%, 400px);
-	padding: 2rem;
+  border: none;
+  border-radius: 0.5rem;
+  width: clamp(300px, 90%, 400px);
+  padding: 2rem;
+  overflow: visible;
+}
 
-	h2 {
-		text-align: center;
-		font-size: 1.5rem;
-		margin-bottom: 1rem;
-		margin-top: 0;
-		font-family: sans-serif;
-	}
+#oto-decline-modal h2 {
+  text-align: center;
+  font-size: 1.65rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-family: sans-serif;
+  text-wrap: balance;
+}
 
-	button {
-		margin-top: 1rem;
-		color: white;
-		border: none;
-		font-size: 1.35rem;
-		outline: none;
-		border-radius: 0.25rem;
-	}
+#oto-decline-modal button {
+  color: white;
+  border: none;
+  font-size: 20px;
+  outline: none;
+  border-radius: 0.25rem;
+  width: 100%;
+  margin-top: -20px;
+  position: relative;
+  background-image: linear-gradient(
+    to top right,
+    var(--primary-cta-color, #fd481b) 0%,
+    var(--secondary-cta-color, #ffc837) 100%
+  ) !important;
+  box-shadow: 0 0 5px #ccc, 1px 5px 5px #ccc;
+}
 
-	&:focus-visible {
-		outline: none;
-		border: none;
-	}
+#oto-decline-modal button {
+  background-position: right center !important;
+  cursor: pointer;
+  box-shadow: 0 0 5px #bbb, 1px 5px 5px #bbb;
+}
 
-	&::backdrop {
-		background-color: rgba(0, 0, 0, 0.65);
-	}
+#oto-decline-modal:focus-visible {
+  outline: none;
+  border: none;
+}
+
+#oto-decline-modal::backdrop {
+  background-color: rgba(0, 0, 0, 0.65);
+}
+
+#keap-payment-method {
+  width: calc(100% + 32px);
+  display: block;
+  left: -16px;
+  position: relative;
 }
