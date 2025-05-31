@@ -14,6 +14,7 @@ function appendQueryParamsToUrl(baseUrl: string): string {
 	});
 
 	newUrl.searchParams.append("lpp", window.location.pathname.substring(1));
+	newUrl.searchParams.append("from_adv", "1");
 
 	// Return the new URL as a string
 	return newUrl.toString();
