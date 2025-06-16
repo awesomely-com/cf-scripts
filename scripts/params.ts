@@ -1,6 +1,7 @@
 declare global {
     interface Window {
         slForUrls: string;
+        AnyTrack?: (key: string) => string | undefined;
     }
 }
 
@@ -52,6 +53,25 @@ document.addEventListener("DOMContentLoaded", () => {
             params.lpp = window.location.pathname.substring(1);
         }
     }
+
+    // Check for window.AnyTrack('atclid') every second for up to 10 seconds
+    (function checkAnyTrackAtclid() {
+        let attempts = 0;
+        const maxAttempts = 10;
+        const interval = setInterval(() => {
+            attempts++;
+            if (typeof window.AnyTrack === 'function') {
+                const atclid = window.AnyTrack('atclid');
+                if (atclid) {
+                    params.atclid = atclid;
+                    clearInterval(interval);
+                }
+            }
+            if (attempts >= maxAttempts) {
+                clearInterval(interval);
+            }
+        }, 1000);
+    })();
 
     function buildQueryString(): string {
         const queryParams = new URLSearchParams();
