@@ -54,25 +54,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Check for window.AnyTrack('atclid') every second for up to 10 seconds
-    (function checkAnyTrackAtclid() {
-        let attempts = 0;
-        const maxAttempts = 10;
-        const interval = setInterval(() => {
-            attempts++;
-            if (typeof window.AnyTrack === 'function') {
-                const atclid = window.AnyTrack('atclid');
-                if (atclid) {
-                    params.atclid = atclid;
-                    clearInterval(interval);
-                }
-            }
-            if (attempts >= maxAttempts) {
-                clearInterval(interval);
-            }
-        }, 1000);
-    })();
-
     function buildQueryString(): string {
         const queryParams = new URLSearchParams();
         for (const key in params) {
@@ -83,51 +64,78 @@ document.addEventListener("DOMContentLoaded", () => {
         return queryParams.toString();
     }
 
-    // Update anchor tags
-    document.querySelectorAll("a").forEach((anchor) => {
-        const href = anchor.getAttribute("href");
-        if (href) {
-            try {
-                const url = new URL(href, window.location.origin);
-                // Remove any existing utm_content
-                url.searchParams.delete("utm_content");
-                const queryString = buildQueryString();
-                if (queryString) {
-                    const existingParams = url.searchParams;
-                    const newParams = new URLSearchParams(queryString);
-                    newParams.forEach((value, key) => {
-                        existingParams.append(key, value);
-                    });
-                    url.search = existingParams.toString();
+    // Check for window.AnyTrack('atclid') every second for up to 10 seconds
+    function updateLinks() {
+        // Update anchor tags
+        document.querySelectorAll("a").forEach((anchor) => {
+            const href = anchor.getAttribute("href");
+            if (href) {
+                try {
+                    const url = new URL(href, window.location.origin);
+                    // Remove any existing utm_content
+                    url.searchParams.delete("utm_content");
+                    const queryString = buildQueryString();
+                    if (queryString) {
+                        const existingParams = url.searchParams;
+                        const newParams = new URLSearchParams(queryString);
+                        newParams.forEach((value, key) => {
+                            existingParams.append(key, value);
+                        });
+                        url.search = existingParams.toString();
+                    }
+                    anchor.setAttribute("href", url.toString());
+                } catch (e) {
+                    console.error("Invalid URL:", href);
                 }
-                anchor.setAttribute("href", url.toString());
-            } catch (e) {
-                console.error("Invalid URL:", href);
             }
-        }
-    });
+        });
 
-    // Update image links
-    document.querySelectorAll("img[data-imagelink]").forEach((img) => {
-        const dl = img.getAttribute("data-imagelink");
-        if (dl) {
-            try {
-                const url = new URL(dl, window.location.origin);
-                // Remove any existing utm_content
-                url.searchParams.delete("utm_content");
-                const queryString = buildQueryString();
-                if (queryString) {
-                    const existingParams = url.searchParams;
-                    const newParams = new URLSearchParams(queryString);
-                    newParams.forEach((value, key) => {
-                        existingParams.append(key, value);
-                    });
-                    url.search = existingParams.toString();
+        // Update image links
+        document.querySelectorAll("img[data-imagelink]").forEach((img) => {
+            const dl = img.getAttribute("data-imagelink");
+            if (dl) {
+                try {
+                    const url = new URL(dl, window.location.origin);
+                    // Remove any existing utm_content
+                    url.searchParams.delete("utm_content");
+                    const queryString = buildQueryString();
+                    if (queryString) {
+                        const existingParams = url.searchParams;
+                        const newParams = new URLSearchParams(queryString);
+                        newParams.forEach((value, key) => {
+                            existingParams.append(key, value);
+                        });
+                        url.search = existingParams.toString();
+                    }
+                    img.setAttribute("data-imagelink", url.toString());
+                } catch (e) {
+                    console.error("Invalid URL:", dl);
                 }
-                img.setAttribute("data-imagelink", url.toString());
-            } catch (e) {
-                console.error("Invalid URL:", dl);
             }
-        }
-    });
+        });
+    }
+
+    (function checkAnyTrackAtclid() {
+        let attempts = 0;
+        const maxAttempts = 10;
+        const interval = setInterval(() => {
+            attempts++;
+            let shouldUpdate = false;
+            if (typeof window.AnyTrack === 'function') {
+                const atclid = window.AnyTrack('atclid');
+                if (atclid) {
+                    params.atclid = atclid;
+                    shouldUpdate = true;
+                    clearInterval(interval);
+                }
+            }
+            if (attempts >= maxAttempts) {
+                shouldUpdate = true;
+                clearInterval(interval);
+            }
+            if (shouldUpdate) {
+                updateLinks();
+            }
+        }, 1000);
+    })();
 });
