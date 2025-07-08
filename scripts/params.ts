@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "click_id",
         "contactId",
         "lpp",
+        "ef_transaction_id"
     ];
 
     function getURLParameter(name: string): string | null {
