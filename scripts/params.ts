@@ -23,7 +23,8 @@ document.addEventListener("DOMContentLoaded", () => {
         "click_id",
         "contactId",
         "lpp",
-        "ef_transaction_id"
+        "ef_transaction_id",
+        "atclid"
     ];
 
     function getURLParameter(name: string): string | null {
@@ -117,6 +118,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     (function checkAnyTrackAtclid() {
+        // If atclid is already present in the URL, use it and update links immediately
+        if (params.atclid) {
+            updateLinks();
+            return;
+        }
+
+        // Only check AnyTrack if atclid wasn't in the URL
         let attempts = 0;
         const maxAttempts = 10;
         const interval = setInterval(() => {
