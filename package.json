@@ -3,9 +3,13 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "build": "bun build ./scripts/offer-closed.ts ./scripts/vidalytics.js ./scripts/param-header.ts ./scripts/order-form.ts --outdir ./dist --minify",
+    "build": "bun build ./scripts/offer-closed.ts ./scripts/vidalytics.js ./scripts/param-header.ts ./scripts/order-form.ts ./scripts/oto.ts --outdir ./dist --minify",
     "dev:order-form": "bun --watch ./scripts/order-form.ts",
-    "bundle:order-form:watch": "bun build ./scripts/order-form.ts --outfile=bundled/order-form.js --watch"
+    "dev:oto": "bun --watch ./scripts/oto.ts",
+    "bundle:order-form": "bun build ./scripts/order-form.ts --outfile=bundled/order-form.js --minify",
+    "bundle:order-form:watch": "bun build ./scripts/order-form.ts --outfile=bundled/order-form.js --watch",
+    "bundle:oto": "bun build ./scripts/oto.ts --outfile=bundled/oto.js --minify",
+    "bundle:oto:watch": "bun build ./scripts/oto.ts --outfile=bundled/oto.js --watch"
   },
   "devDependencies": {
     "@types/bun": "latest"
