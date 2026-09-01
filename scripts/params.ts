@@ -24,7 +24,9 @@ document.addEventListener("DOMContentLoaded", () => {
         "contactId",
         "lpp",
         "ef_transaction_id",
-        "atclid"
+        "atclid",
+        "sb_subscriber_id",
+        "sb_campaign_id"
     ];
 
     function getURLParameter(name: string): string | null {
