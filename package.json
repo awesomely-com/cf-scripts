@@ -3,7 +3,7 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "build": "bun build ./scripts/offer-closed.ts ./scripts/vidalytics.js ./scripts/param-header.ts ./scripts/order-form.ts --outdir ./dist --minify",
+    "build": "bun build ./scripts/offer-closed.ts ./scripts/vidalytics.js ./scripts/vsl-guard.ts ./scripts/param-header.ts ./scripts/order-form.ts --outdir ./dist --minify",
     "dev:order-form": "bun --watch ./scripts/order-form.ts",
     "bundle:order-form:watch": "bun build ./scripts/order-form.ts --outfile=bundled/order-form.js --watch"
   },

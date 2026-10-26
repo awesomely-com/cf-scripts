@@ -1,4 +1,5 @@
 import { addStyles } from "../util";
+import guardVsl from "./vsl-guard";
 
 // Change to 1024px to target both mobile & tablet devices
 const IS_MOBILE = window.matchMedia("(max-width: 770px)").matches;
@@ -19,6 +20,16 @@ export default function onRenderVideo(options) {
 	document.querySelector("#desktop_video>div").id = desktop.embedId;
 	if (mobile) {
 		document.querySelector("#mobile_video>div").id = mobile.embedId;
+	}
+
+	const active = IS_MOBILE && mobile ? mobile : desktop;
+	if (options.guard) {
+		// Must register before the loader script is injected so its error event isn't missed.
+		guardVsl({
+			...(typeof options.guard === "object" ? options.guard : {}),
+			embedId: active.embedId,
+			ctaElements,
+		});
 	}
 
 	if (IS_MOBILE && mobile) {
